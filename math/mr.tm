@@ -36,14 +36,15 @@
 :Evaluate:  mbMb::usage  = "mbMb[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  mb/Mb, full correction to relation between MS-bar mass mb and pole Mb"
 
 
-:Evaluate:  a1::usage  = "a1[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  a1=5/3(g1/(4\[Pi]))^2, we use GUT normalization"
-:Evaluate:  a2::usage  = "a2[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  a2=(g2/(4\[Pi]))^2"
-:Evaluate:  at::usage  = "a1[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  at=(yt/(4\[Pi]))^2"
-:Evaluate:  ab::usage  = "ab[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  ab=(yb/(4\[Pi]))^2"
-:Evaluate:  alam::usage  = "alam[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  alam=\[Lambda]/(4\[Pi])^2"
-:Evaluate:  vev::usage  = "vev[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  vev - running vev at specified scale"
-:Evaluate:  dalphaGF::usage  = "dalphaGF[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1] - loop contribution to the relation between GF and running alpha"
-:Evaluate:  alphaGF::usage  = "alphaGF[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1] - running alpha in terms GF and running alpha_s" 
+:Evaluate:  a1::usage  = "a1[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  returns a1=5/3(g1/(4\[Pi]))^2 as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2, we use GUT normalization"
+:Evaluate:  a2::usage  = "a2[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  returns a2=(g2/(4\[Pi]))^2 as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2"
+:Evaluate:  at::usage  = "a1[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  returns at=(yt/(4\[Pi]))^2 as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2"
+:Evaluate:  ab::usage  = "ab[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  returns ab=(yb/(4\[Pi]))^2 as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2"
+:Evaluate:  alam::usage  = "alam[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1] returns alam=\[Lambda]/(4\[Pi])^2 as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2"
+:Evaluate:  vev::usage  = "vev[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  returns running vev[scale] as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2"
+
+:Evaluate:  dalphaGF::usage  = "dalphaGF[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1] - calculates loop contributions to the relation between GF and running alpha[scale]"
+:Evaluate:  alphaGF::usage  = "alphaGF[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1] - calculates running alpha[scale] in terms GF and running alpha_s[scale]" 
 
 :Evaluate:  aEW::usage  = "\[Alpha]/(4\[Pi]), running EW constant"
 :Evaluate:  aQCD::usage  = "\[Alpha]_S/(4\[Pi]), running QCD constant"
@@ -51,20 +52,25 @@
 :Evaluate:  Gf::usage  = "G_F Fermi constant"
 :Evaluate:  h::usage  = "h - loop counter"
 
-:Evaluate:  xW::usage  = ""
-:Evaluate:  xZ::usage  = ""
-:Evaluate:  xH::usage  = ""
-:Evaluate:  xt::usage  = ""
-:Evaluate:  xb::usage  = ""
+:Evaluate:  xW::usage  = "xW[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between running mW and the pole mass MW"
+:Evaluate:  xZ::usage  = "xZ[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between running mZ and the pole mass MZ"
+:Evaluate:  xH::usage  = "xH[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between running mH and the pole mass MH"
+:Evaluate:  xt::usage  = "xt[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between running mt and the pole mass Mt"
+:Evaluate:  xb::usage  = "xb[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between running mb and the pole mass Mb"
 
-:Evaluate:  yW::usage  = ""
-:Evaluate:  yZ::usage  = ""
-:Evaluate:  yH::usage  = ""
-:Evaluate:  yt::usage  = ""
-:Evaluate:  yb::usage  = ""
+:Evaluate:  yW::usage  = "yW[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running Higgs coupling to W-boson and the pole mass MW"
+:Evaluate:  yZ::usage  = "yZ[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running Higgs coupling to Z-boson and the pole mass MZ"
+:Evaluate:  yH::usage  = "yH[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running Higgs coupling to H-boson and the pole mass MH"
+:Evaluate:  yt::usage  = "yt[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running Higgs coupling to t-quark and the pole mass Mt"
+:Evaluate:  yb::usage  = "yb[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running Higgs coupling to b-quark and the pole mass Mb"
 
-:Evaluate:  dr::usage  = ""
-:Evaluate:  daGF::usage  = ""
+:Evaluate:  dr::usage  = "dr[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running Higgs vev and the Fermi constant GF"
+
+:Evaluate:  daGF::usage  = "daGF[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running electromagnetic alpha and Fermi constant GF. Note that aEW should be again expressed in terms of Fermi constant"
+
+:Evaluate:   g1::usage  = "running U(1) coupling"
+:Evaluate:   g2::usage  = "running SU(2) coupling"
+:Evaluate:   gs::usage  = "running SU(3) strong coupling"
 
 :Evaluate:  Begin["`Private`"]
 
