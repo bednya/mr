@@ -9,7 +9,7 @@
 
 
 :Evaluate:  MW::usage  = "MW[gp,g,gs,yt,lam,m,scale,L=2] returns pole W-boson mass MW given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MW::usage  = "MW[gp,g,gs,yt,lam,m,scale,L=2] returns pole W-boson mass MW given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MW::usage  = "MW[runpars,L=2] returns pole W-boson mass MW given  MSbar parameters (runpars = { scale -> ..., g1 -> .., etc }) at L-loop level"
 :Evaluate:  MWp::usage  = "MWp[gp,g,gs,yt,lam,m,scale,L=2] returns pole W-boson mass MW given  MSbar parameters at specified scale at L-loop level"
 :Evaluate:  MZp::usage  = "MZp[gp,g,gs,yt,lam,m,scale,L=2] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at L-loop level"
 :Evaluate:  MZ::usage  = "MZ[gp,g,gs,yt,lam,m,scale,L=2] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at L-loop level"
@@ -71,6 +71,11 @@
 :Evaluate:   g1::usage  = "running U(1) coupling"
 :Evaluate:   g2::usage  = "running SU(2) coupling"
 :Evaluate:   gs::usage  = "running SU(3) strong coupling"
+:Evaluate:   yt::usage  = "running top Yukawa coupling"
+:Evaluate:   yb::usage  = "running bottom Yukawa coupling"
+:Evaluate:   lam::usage  = "running higgs self-coupling"
+:Evaluate:   m::usage    = "running higgs mass parameter"
+
 
 :Evaluate:  Begin["`Private`"]
 
@@ -104,6 +109,10 @@
 
 :Evaluate:  vev[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := 2^(-1/4)/Sqrt[Gf]*Sqrt[(1+aEW[scale]*dr[1,0]+aEW[scale]*aQCD[scale]*dr[1,1]+aEW[scale]^2*dr[2,0])] /.dROS[mb,mW,mZ,mH,mt,scale,nL,nH];
 
+:Evaluate:  MW[runpars_List,L_?NumericQ]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars}, 
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+							Return[ Sequence @@ pars, L], 
+			(* else *) Print[" Not All parameters specified "]]];
 
 // C++ part
 :Begin:
