@@ -133,10 +133,10 @@ const alphaGF & get_aGF(const OSinput& oi, long double mu2)
 
 typedef std::vector<std::pair<size_t,size_t> > Vpow;
 
-void MWp(long double gp, long double g, long double gs, long double yt, long double lam, long double mu0, long double mu, int L) 
+void MWp(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
-  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, 0, yt, g, gp);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
   
   WW<MS> WWm = get_WWbar(mi, mu2);
 
@@ -194,10 +194,10 @@ void MWp(long double gp, long double g, long double gs, long double yt, long dou
   
 }
 
-void MW(long double gp, long double g, long double gs, long double yt, long double lam, long double mu0, long double mu, int L) 
+void MW(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
-  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, 0, yt, g, gp);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
   
   WW<MS> WWm = get_WWbar(mi, mu2);
 
@@ -214,10 +214,10 @@ void MW(long double gp, long double g, long double gs, long double yt, long doub
   
 }
 
-void MZ(long double gp, long double g, long double gs, long double yt, long double lam, long double mu0, long double mu, int L) 
+void MZ(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
-  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, 0, yt, g, gp);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
   
   ZZ<MS> ZZm = get_ZZbar(mi, mu2);
 
@@ -234,10 +234,10 @@ void MZ(long double gp, long double g, long double gs, long double yt, long doub
   
 }
 
-void MZp(long double gp, long double g, long double gs, long double yt, long double lam, long double mu0, long double mu, int L) 
+void MZp(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
-  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, 0, yt, g, gp);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
   
   ZZ<MS> ZZm = get_ZZbar(mi, mu2);
 
@@ -310,14 +310,14 @@ void RunQCD(long double oscale, long double asMZ, long double MZscale, int nL, l
 		
 }	
 
-void RunSM(long double gp, long double g, long double gs, long double yt, long double lam, long double mu0, long double iscale, long double oscale) 
+void RunSM(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double iscale, long double oscale) 
 {
       CouplingsMu runSM(
                 5./3.*pow(gp/4./Pi,2),
                 pow(g/4./Pi,2),
                 pow(gs/4./Pi,2),
                 pow(yt/4./Pi,2),
-                0, // yb?
+                pow(yb/4./Pi,2), // yb?
                 0, // ytau?
                 lam/pow(4.*Pi,2),             // Lambda
 		mu0, /* higgs mass parameter*/
@@ -330,6 +330,7 @@ void RunSM(long double gp, long double g, long double gs, long double yt, long d
       MLPutReal128(stdlink, 4.*Pi*sqrt(3/5.*runCoupling[0])); //gp
       MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[1])); //g 
       MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[2])); //gs
+      MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[4])); //yb
       MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[3])); //yt
       MLPutReal128(stdlink, pow(4.*Pi,2)*runCoupling[6]); //lam
       MLPutReal128(stdlink, runCoupling[7]); //mu ??
@@ -337,10 +338,10 @@ void RunSM(long double gp, long double g, long double gs, long double yt, long d
 		
 }
 
-void MH(long double gp, long double g, long double gs, long double yt, long double lam, long double mu0, long double mu, int L) 
+void MH(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
-  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, 0, yt, g, gp);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
   
   HH<MS> HHm = get_HHbar(mi, mu2);
 
@@ -357,10 +358,10 @@ void MH(long double gp, long double g, long double gs, long double yt, long doub
   
 }
 
-void MHp(long double gp, long double g, long double gs, long double yt, long double lam, long double mu0, long double mu, int L) 
+void MHp(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
-  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, 0, yt, g, gp);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
   
   HH<MS> HHm = get_HHbar(mi, mu2);
 
@@ -418,10 +419,10 @@ void MHp(long double gp, long double g, long double gs, long double yt, long dou
   
 }
 
-void MTp(long double gp, long double g, long double gs, long double yt, long double lam, long double mu0, long double mu, int L) 
+void MTp(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
-  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, 0, yt, g, gp);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
   
   tt<MS> ttm = get_ttbar(mi, mu2);
 
@@ -470,10 +471,10 @@ void MTp(long double gp, long double g, long double gs, long double yt, long dou
 
 }
 
-void MT(long double gp, long double g, long double gs, long double yt, long double lam, long double mu0, long double mu, int L) 
+void MT(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
-  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, 0, yt, g, gp);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
   
   tt<MS> ttm = get_ttbar(mi, mu2);
 
@@ -492,10 +493,10 @@ void MT(long double gp, long double g, long double gs, long double yt, long doub
   MLPutReal128(stdlink, MTpole);
   
 }
-void GF(long double gp, long double g, long double gs, long double yt, long double lam, long double mu0, long double mu, int L) 
+void GF(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
-  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, 0, yt, g, gp);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
   
   dr<MS> drm = get_drbar(mi, mu2);
 
