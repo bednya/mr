@@ -8,16 +8,16 @@
 :Evaluate:  RunSM::usage  = "RunSM[gp,g,gs,yt,lam,m,iscale,oscale] return running parameters at specified oscale given the values at specified iscale"
 
 
-:Evaluate:  MW::usage  = "MW[gp,g,gs,yt,lam,m,scale,L=2] returns pole W-boson mass MW given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MW::usage  = "MW[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole W-boson mass MW given  MSbar parameters at specified scale at L-loop level"
 :Evaluate:  MW::usage  = "MW[runpars,L=2] returns pole W-boson mass MW given  MSbar parameters (runpars = { scale -> ..., g1 -> .., etc }) at L-loop level"
-:Evaluate:  MWp::usage  = "MWp[gp,g,gs,yt,lam,m,scale,L=2] returns pole W-boson mass MW given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MZp::usage  = "MZp[gp,g,gs,yt,lam,m,scale,L=2] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MZ::usage  = "MZ[gp,g,gs,yt,lam,m,scale,L=2] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MH::usage  = "MH[gp,g,gs,yt,lam,m,scale,L=2] returns pole H-boson mass MH given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MHp::usage  = "MHp[gp,g,gs,yt,lam,m,scale,L=2] returns pole H-boson mass MH given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MT::usage  = "MT[gp,g,gs,yt,lam,m,scale,L=2] returns pole t-quark mass MT given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MTp::usage  = "MTp[gp,g,gs,yt,lam,m,scale,L=2] returns pole t-quark mass MT given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  GF::usage  = "GF[gp,g,gs,yt,lam,m,scale,L=2] returns Fermi constant GF given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MWp::usage  = "MWp[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole W-boson mass MW given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MZp::usage  = "MZp[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MZ::usage  = "MZ[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MH::usage  = "MH[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole H-boson mass MH given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MHp::usage  = "MHp[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole H-boson mass MH given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MT::usage  = "MT[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole t-quark mass MT given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MTp::usage  = "MTp[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole t-quark mass MT given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  GF::usage  = "GF[gp,g,gs,yb,yt,lam,m,scale,L=2] returns Fermi constant GF given  MSbar parameters at specified scale at L-loop level"
 
 
 :Evaluate:  Xb::usage  = "Xb[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  Input is in terms of pole masses and matching scale, nL and nH are number of light and heavy quark genrations "
@@ -117,73 +117,73 @@
 // C++ part
 :Begin:
 :Function: MW
-:Pattern: MW[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
+:Pattern: MW[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
 :ReturnType: Manual
 :End:
 
 :Begin:
 :Function: MWp
-:Pattern: MWp[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
+:Pattern: MWp[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
 :ReturnType: Manual
 :End:
 
 :Begin:
 :Function: MZ
-:Pattern: MZ[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
+:Pattern: MZ[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
 :ReturnType: Manual
 :End:
 
 :Begin:
 :Function: MZp
-:Pattern: MZp[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
+:Pattern: MZp[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
 :ReturnType: Manual
 :End:
 
 :Begin:
 :Function: MHp
-:Pattern: MHp[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
+:Pattern: MHp[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
 :ReturnType: Manual
 :End:
 
 :Begin:
 :Function: MH
-:Pattern: MH[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
+:Pattern: MH[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
 :ReturnType: Manual
 :End:
 
 :Begin:
 :Function: MT
-:Pattern: MT[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
+:Pattern: MT[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
 :ReturnType: Manual
 :End:
 
 :Begin:
 :Function: MTp
-:Pattern: MTp[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
+:Pattern: MTp[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
 :ReturnType: Manual
 :End:
 
 :Begin:
 :Function: GF
-:Pattern: GF[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
+:Pattern: GF[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
 :ReturnType: Manual
 :End:
 
@@ -197,9 +197,9 @@
 
 :Begin:
 :Function: RunSM
-:Pattern: RunSM[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,iscale_?NumericQ,oscale_?NumericQ]
-:Arguments: {N[gp],N[g],N[gs],N[yt],N[lam],N[m],N[iscale],N[oscale]}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
+:Pattern: RunSM[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,iscale_?NumericQ,oscale_?NumericQ]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[iscale],N[oscale]}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
 :ReturnType: Manual
 :End:
 
