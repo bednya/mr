@@ -235,6 +235,79 @@ void XMW(long double gp, long double g, long double gs, long double yb, long dou
   		MLPutReal128(stdlink, WWm.x(apow,aspow));
 	}
  }
+void XMZ(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
+{
+  long double mu2 = pow(mu,2);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
+  
+  ZZ<MS> ZZm = get_ZZbar(mi, mu2);
+
+
+  MLPutFunction(stdlink, "List", 3);
+
+
+  for(size_t apow = 1; apow <=2; apow++)
+    for(size_t aspow = 0; aspow + apow <=2; aspow++)
+	{
+		MLPutFunction(stdlink, "Rule", 2);
+		MLPutFunction(stdlink, "xMZ", 2);
+		MLPutInteger(stdlink, apow);
+		MLPutInteger(stdlink, aspow);
+  		MLPutReal128(stdlink, ZZm.x(apow,aspow));
+	}
+}
+void XMH(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
+{
+  long double mu2 = pow(mu,2);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
+  
+  HH<MS> HHm = get_HHbar(mi, mu2);
+
+
+  MLPutFunction(stdlink, "List", 3);
+
+
+  for(size_t apow = 1; apow <=2; apow++)
+    for(size_t aspow = 0; aspow + apow <=2; aspow++)
+	{
+		MLPutFunction(stdlink, "Rule", 2);
+		MLPutFunction(stdlink, "xMH", 2);
+		MLPutInteger(stdlink, apow);
+		MLPutInteger(stdlink, aspow);
+  		MLPutReal128(stdlink, HHm.x(apow,aspow));
+	}
+}
+
+
+void XdRbar(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
+{
+  long double mu2 = pow(mu,2);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
+  
+  dr<MS> drm = get_drbar(mi, mu2);
+
+  MLPutFunction(stdlink, "List", 3);
+
+  MLPutFunction(stdlink, "Rule", 2);
+  MLPutFunction(stdlink, "xdRbar", 2);
+  MLPutInteger(stdlink, 1);
+  MLPutInteger(stdlink, 0);
+  MLPutReal128(stdlink, drm.dr10());
+
+  MLPutFunction(stdlink, "Rule", 2);
+  MLPutFunction(stdlink, "xdRbar", 2);
+  MLPutInteger(stdlink, 1);
+  MLPutInteger(stdlink, 1);
+  MLPutReal128(stdlink, drm.dr11());
+
+  MLPutFunction(stdlink, "Rule", 2);
+  MLPutFunction(stdlink, "xdRbar", 2);
+  MLPutInteger(stdlink, 2);
+  MLPutInteger(stdlink, 0);
+  MLPutReal128(stdlink, drm.dr20());
+
+}
+
 
 void XMT(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
 {

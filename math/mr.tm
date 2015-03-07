@@ -21,6 +21,10 @@
 
 
 :Evaluate:  XMW::usage  = "XMW[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the pole W-boson mass MW given  MSbar parameters at specified scale"
+:Evaluate:  XMZ::usage  = "XMZ[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the pole Z-boson mass MZ given  MSbar parameters at specified scale"
+:Evaluate:  XMH::usage  = "XMH[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the pole H-boson mass MH given  MSbar parameters at specified scale"
+:Evaluate:  XdRbar::usage  = "XdRbar[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the Fermi constant GF - running vev relation given  MSbar parameters at specified scale"
+
 :Evaluate:  XMT::usage  = "XMT[gp,g,gs,yb,yt,lam,m,scale] returns electroweak contributions to the pole top quark mass MT given  MSbar parameters at specified scale"
 :Evaluate:  XMTQCD::usage  = "XMT[gp,g,gs,yb,yt,lam,m,scale] returns pure QCD contributions to the pole top quark mass MT given  MSbar parameters at specified scale"
 
@@ -127,6 +131,32 @@
 :ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
 :ReturnType: Manual
 :End:
+
+
+:Begin:
+:Function: XMZ
+:Pattern: XMZ[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale]}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
+:ReturnType: Manual
+:End:
+
+:Begin:
+:Function: XMH
+:Pattern: XMH[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale]}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
+:ReturnType: Manual
+:End:
+
+:Begin:
+:Function: XdRbar
+:Pattern: XdRbar[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale]}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
+:ReturnType: Manual
+:End:
+
 
 :Begin:
 :Function: XMT
