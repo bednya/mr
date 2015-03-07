@@ -8,15 +8,16 @@
 :Evaluate:  RunSM::usage  = "RunSM[gp,g,gs,yt,lam,m,iscale,oscale] return running parameters at specified oscale given the values at specified iscale"
 
 
-:Evaluate:  MW::usage  = "MW[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole W-boson mass MW given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MW::usage  = "MW[gp,g,gs,yb,yt,lam,m,scale] returns pole W-boson mass MW given  MSbar parameters at specified scale at 2-loop level"
 :Evaluate:  MWp::usage  = "MWp[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole W-boson mass MW given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MZp::usage  = "MZp[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MZ::usage  = "MZ[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MH::usage  = "MH[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole H-boson mass MH given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MZp::usage  = "MZp[gp,g,gs,yb,yt,lam,m,scale] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MZ::usage  = "MZ[gp,g,gs,yb,yt,lam,m,scale] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at 2-loop level"
+:Evaluate:  MH::usage  = "MH[gp,g,gs,yb,yt,lam,m,scale] returns pole H-boson mass MH given  MSbar parameters at specified scale at 2-loop level"
 :Evaluate:  MHp::usage  = "MHp[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole H-boson mass MH given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MT::usage  = "MT[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole t-quark mass MT given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  MT::usage  = "MT[gp,g,gs,yb,yt,lam,m,scale] returns pole t-quark mass MT given  MSbar parameters at specified scale at 2-loop level + 3-loop QCD"
 :Evaluate:  MTp::usage  = "MTp[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole t-quark mass MT given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  GF::usage  = "GF[gp,g,gs,yb,yt,lam,m,scale,L=2] returns Fermi constant GF given  MSbar parameters at specified scale at L-loop level"
+:Evaluate:  GF::usage  = "GF[gp,g,gs,yb,yt,lam,m,scale] returns Fermi constant GF given  MSbar parameters at specified scale at 2-loop level"
+:Evaluate:  GFp::usage  = "GFp[gp,g,gs,yb,yt,lam,m,scale,L=2] returns Fermi constant GF given  MSbar parameters at specified scale at L-loop level"
 
 
 :Evaluate:  XMMW::usage  = "XMMW[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the pole W-boson mass MW^2 given  MSbar parameters at specified scale"
@@ -129,7 +130,20 @@
 
 :Evaluate:  vev[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := 2^(-1/4)/Sqrt[Gf]*Sqrt[(1+aEW[scale]*dr[1,0]+aEW[scale]*aQCD[scale]*dr[1,1]+aEW[scale]^2*dr[2,0])] /.dROS[mb,mW,mZ,mH,mt,scale,nL,nH];
 
-:Evaluate:  MW[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mW}, 
+:Evaluate:  MW[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD,mW},
+			(* loop corrections *)	lc = XMMW[ Sequence @@ pars];
+			vev = Sqrt[M^2/LAM/2]; mW = G2 * vev/2.0;
+			{aEW, aQCD} = {G1^2*G2^2/(G1^2 + G2^2), GS^2}/(16 Pi^2);
+			Return[ mW * Sqrt[1 + looptag * aEW * xMMW[1, 0] + looptag^2 ( aEW^2 * xMMW[2,0] + aEW*aQCD * xMMW[1,1])] /. lc ]]	
+
+
+:Evaluate:  MW[runpars_List, looptag_:1]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars},
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+			Return[ MW[ Sequence @@ pars, looptag ] ],
+			(* else *) Print[" Not All parameters specified ", pars, " from ", runpars]]];
+
+
+:Evaluate:  MWold[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mW}, 
 			(* check numeric *) If [ And @@ NumericQ /@ pars, 
 			(* loop corrections *)	lc = XMMW[ Sequence @@ pars];
 			vev = Sqrt[m^2/lam/2] /. runpars;
@@ -138,7 +152,17 @@
 			Return[ mW * Sqrt[1 + h * aEW * xMMW[1, 0] + h^2 ( aEW^2 * xMMW[2,0] + aEW*aQCD * xMMW[1,1])] /. lc ],	
 			(* else *) Print[" Not All parameters specified ", pars, " from ", runpars]]];
 
-:Evaluate:  MZ[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mZ}, 
+:Evaluate:  MZ[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD,mZ},
+			(* loop corrections *)	lc = XMMZ[ Sequence @@ pars];
+			vev = Sqrt[M^2/LAM/2]; mZ = Sqrt[G1^2 + G2^2] * vev/2.0;
+			{aEW, aQCD} = {G1^2*G2^2/(G1^2 + G2^2), GS^2}/(16 Pi^2);
+			Return[ mZ * Sqrt[1 + looptag * aEW * xMMZ[1, 0] + looptag^2 ( aEW^2 * xMMZ[2,0] + aEW*aQCD * xMMZ[1,1])] /. lc ]]	
+:Evaluate:  MZ[runpars_List, looptag_:1]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars},
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+			Return[ MZ[ Sequence @@ pars, looptag ] ],
+			(* else *) Print[" Not All parameters specified ", pars, " from ", runpars]]];
+
+:Evaluate:  MZold[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mZ}, 
 			(* check numeric *) If [ And @@ NumericQ /@ pars, 
 			(* loop corrections *)	lc = XMMZ[ Sequence @@ pars];
 			vev = Sqrt[m^2/lam/2] /. runpars;
@@ -147,7 +171,19 @@
 			Return[ mZ * Sqrt[1 + h * aEW * xMMZ[1, 0] + h^2 ( aEW^2 * xMMZ[2,0] + aEW*aQCD * xMMZ[1,1])] /. lc ],	
 			(* else *) Print[" Not All parameters specified  ", pars, " from ", runpars]]];
 
-:Evaluate:  MH[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mH}, 
+
+:Evaluate:  MH[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD},
+			(* loop corrections *)	lc = XMMH[ Sequence @@ pars];
+			{aEW, aQCD} = {G1^2*G2^2/(G1^2 + G2^2), GS^2}/(16 Pi^2);
+			Return[ M * Sqrt[1 + looptag * aEW * xMMH[1, 0] + looptag^2 ( aEW^2 * xMMH[2,0] + aEW*aQCD * xMMH[1,1])] /. lc ]]	
+
+:Evaluate:  MH[runpars_List, looptag_:1]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars},
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+			Return[ MH[ Sequence @@ pars, looptag ] ],
+			(* else *) Print[" Not All parameters specified ", pars, " from ", runpars]]];
+
+
+:Evaluate:  MHold[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mH}, 
 			(* check numeric *) If [ And @@ NumericQ /@ pars, 
 			(* loop corrections *)	lc = XMMH[ Sequence @@ pars];
 			mH = m /. runpars; (* notation *)
@@ -155,7 +191,20 @@
 			Return[ mH * Sqrt[1 + h * aEW * xMMH[1, 0] + h^2 ( aEW^2 * xMMH[2,0] + aEW*aQCD * xMMH[1,1])] /. lc ],	
 			(* else *) Print[" Not All parameters specified  ", pars, " from ", runpars]]];
 
-:Evaluate:  MT[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mt}, 
+
+:Evaluate:  MT[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD,mt},
+			(* loop corrections *)	lc = Join[XMT[ Sequence @@ pars], XMTQCD[ Sequence @@ pars]];
+			{aEW, aQCD} = {G1^2*G2^2/(G1^2 + G2^2), GS^2}/(16 Pi^2);
+			vev = Sqrt[M^2/LAM/2]; mt = YT * vev / Sqrt[2];
+			Return[ mt * (1 + looptag * (aQCD * xMTQCD[0,1] + aEW * xMT[1, 0]) + looptag^2 ( aQCD^2 * xMTQCD[0,2] + aEW^2 * xMT[2,0] + aEW*aQCD * xMT[1,1] ) + looptag^3 * aQCD^3 * xMTQCD[0,3]) /. lc ]]	
+
+:Evaluate:  MT[runpars_List, looptag_:1]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars},
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+			Return[ MT[ Sequence @@ pars, looptag ] ],
+			(* else *) Print[" Not All parameters specified ", pars, " from ", runpars]]];
+
+
+:Evaluate:  MTold[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mt}, 
 			(* check numeric *) If [ And @@ NumericQ /@ pars, 
 			(* loop corrections *)	lc = Join[ XMT[ Sequence @@ pars], XMTQCD[ Sequence @@ pars]];
 			vev = Sqrt[m^2/lam/2] /. runpars;
@@ -164,7 +213,18 @@
 			Return[ mt * (1 + h * (aQCD * xMTQCD[0,1] + aEW * xMT[1, 0]) + h^2 ( aQCD^2 * xMTQCD[0,2] + aEW^2 * xMT[2,0] + aEW*aQCD * xMT[1,1] ) + h^3 * aQCD^3 * xMTQCD[0,3]) /. lc ],	
 			(* else *) Print[" Not All parameters specified ", pars, " from ", runpars ]]];
 
-:Evaluate:  GF[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vv, lc, aEW, aQCD, gf}, 
+:Evaluate:  GF[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vv,lc,aEW,aQCD,gf},
+			(* loop corrections *)	lc = XdRbar[ Sequence @@ pars];
+			{aEW, aQCD} = {G1^2*G2^2/(G1^2 + G2^2), GS^2}/(16 Pi^2);
+			vv = M^2/LAM/2; gf = 1/Sqrt[2]/vv; 
+			Return[ gf * (1 + looptag * aEW * xdRbar[1, 0] + looptag^2 (  aEW^2 * xdRbar[2,0] + aEW*aQCD * xdRbar[1,1] ) ) /. lc ]];	
+				
+:Evaluate:  GF[runpars_List, looptag_:1]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars},
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+			Return[ GF[ Sequence @@ pars, looptag ] ],
+			(* else *) Print[" Not All parameters specified ", pars, " from ", runpars]]];
+
+:Evaluate:  GFold[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vv, lc, aEW, aQCD, gf}, 
 			(* check numeric *) If [ And @@ NumericQ /@ pars, 
 			(* loop corrections *)	lc = XdRbar[ Sequence @@ pars];
 			vv = m^2/lam/2 /. runpars;
@@ -226,13 +286,6 @@
 :ReturnType: Manual
 :End:
 
-:Begin:
-:Function: MW
-:Pattern: MW[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
-:ReturnType: Manual
-:End:
 
 :Begin:
 :Function: MWp
@@ -242,13 +295,6 @@
 :ReturnType: Manual
 :End:
 
-:Begin:
-:Function: MZ
-:Pattern: MZ[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
-:ReturnType: Manual
-:End:
 
 :Begin:
 :Function: MZp
@@ -266,21 +312,6 @@
 :ReturnType: Manual
 :End:
 
-:Begin:
-:Function: MH
-:Pattern: MH[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
-:ReturnType: Manual
-:End:
-
-:Begin:
-:Function: MT
-:Pattern: MT[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
-:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
-:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
-:ReturnType: Manual
-:End:
 
 :Begin:
 :Function: MTp
@@ -291,8 +322,8 @@
 :End:
 
 :Begin:
-:Function: GF
-:Pattern: GF[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
+:Function: GFp
+:Pattern: GFp[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]
 :Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale],L}
 :ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Integer}
 :ReturnType: Manual
