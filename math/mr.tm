@@ -9,7 +9,6 @@
 
 
 :Evaluate:  MW::usage  = "MW[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole W-boson mass MW given  MSbar parameters at specified scale at L-loop level"
-:Evaluate:  MW::usage  = "MW[runpars,L=2] returns pole W-boson mass MW given  MSbar parameters (runpars = { scale -> ..., g1 -> .., etc }) at L-loop level"
 :Evaluate:  MWp::usage  = "MWp[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole W-boson mass MW given  MSbar parameters at specified scale at L-loop level"
 :Evaluate:  MZp::usage  = "MZp[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at L-loop level"
 :Evaluate:  MZ::usage  = "MZ[gp,g,gs,yb,yt,lam,m,scale,L=2] returns pole Z-boson mass MZ given  MSbar parameters at specified scale at L-loop level"
@@ -20,9 +19,9 @@
 :Evaluate:  GF::usage  = "GF[gp,g,gs,yb,yt,lam,m,scale,L=2] returns Fermi constant GF given  MSbar parameters at specified scale at L-loop level"
 
 
-:Evaluate:  XMW::usage  = "XMW[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the pole W-boson mass MW given  MSbar parameters at specified scale"
-:Evaluate:  XMZ::usage  = "XMZ[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the pole Z-boson mass MZ given  MSbar parameters at specified scale"
-:Evaluate:  XMH::usage  = "XMH[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the pole H-boson mass MH given  MSbar parameters at specified scale"
+:Evaluate:  XMMW::usage  = "XMMW[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the pole W-boson mass MW^2 given  MSbar parameters at specified scale"
+:Evaluate:  XMMZ::usage  = "XMMZ[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the pole Z-boson mass MZ^2 given  MSbar parameters at specified scale"
+:Evaluate:  XMMH::usage  = "XMMH[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the pole H-boson mass MH^2 given  MSbar parameters at specified scale"
 :Evaluate:  XdRbar::usage  = "XdRbar[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the Fermi constant GF - running vev relation given  MSbar parameters at specified scale"
 
 :Evaluate:  XMT::usage  = "XMT[gp,g,gs,yb,yt,lam,m,scale] returns electroweak contributions to the pole top quark mass MT given  MSbar parameters at specified scale"
@@ -73,6 +72,16 @@
 :Evaluate:  yt::usage  = "yt[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running Higgs coupling to t-quark and the pole mass Mt"
 :Evaluate:  yb::usage  = "yb[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running Higgs coupling to b-quark and the pole mass Mb"
 
+
+:Evaluate:  xMMW::usage  = "xMW[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the pole mass MW^2 and running parameters"
+:Evaluate:  xMMZ::usage  = "xMZ[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the pole mass MZ^2 and running parameters"
+:Evaluate:  xMMH::usage  = "xMH[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the pole mass MH^2 and running parameters" 
+:Evaluate:  xMT::usage  = "xMT[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the pole mass MT and running parameters"
+:Evaluate:  xMTQCD::usage  = "xMTQCD[0,b] represents a coefficient of pure QCD contribution aQCD^b in the relation between the pole mass MT and running parameters"
+:Evaluate:  xdRbar::usage  = "xdRbar[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between GF and running parameters (vev, etc)"
+
+
+
 :Evaluate:  dr::usage  = "dr[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running Higgs vev and the Fermi constant GF"
 
 :Evaluate:  daGF::usage  = "daGF[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running electromagnetic alpha and Fermi constant GF. Note that aEW should be again expressed in terms of Fermi constant"
@@ -84,6 +93,7 @@
 :Evaluate:   yb::usage  = "running bottom Yukawa coupling"
 :Evaluate:   lam::usage  = "running higgs self-coupling"
 :Evaluate:   m::usage    = "running higgs mass parameter"
+:Evaluate:   scale::usage  = "renormalization scale"
 
 
 :Evaluate:  Begin["`Private`"]
@@ -118,15 +128,46 @@
 
 :Evaluate:  vev[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := 2^(-1/4)/Sqrt[Gf]*Sqrt[(1+aEW[scale]*dr[1,0]+aEW[scale]*aQCD[scale]*dr[1,1]+aEW[scale]^2*dr[2,0])] /.dROS[mb,mW,mZ,mH,mt,scale,nL,nH];
 
-:Evaluate:  MW[runpars_List,L_?NumericQ]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars}, 
+:Evaluate:  MW[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mW}, 
 			(* check numeric *) If [ And @@ NumericQ /@ pars, 
-							Return[ Sequence @@ pars, L], 
+			(* loop corrections *)	lc = XMMW[ Sequence @@ pars];
+			vev = Sqrt[m^2/lam/2] /. runpars;
+			mW = g2 * vev/2.0 /. runpars;
+			{aEW, aQCD} = {g1^2*g2^2/(g1^2 + g2^2), gs^2}/(16 Pi^2) /. runpars; 
+			Return[ mW * Sqrt[1 + h * aEW * xMMW[1, 0] + h^2 ( aEW^2 * xMMW[2,0] + aEW*aQCD * xMMW[1,1])] /. lc ],	
+			(* else *) Print[" Not All parameters specified "]]];
+
+:Evaluate:  MZ[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mZ}, 
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+			(* loop corrections *)	lc = XMMZ[ Sequence @@ pars];
+			vev = Sqrt[m^2/lam/2] /. runpars;
+			mZ = Sqrt[g1^2 + g2^2] * vev/2.0 /. runpars;
+			{aEW, aQCD} = {g1^2*g2^2/(g1^2 + g2^2), gs^2}/(16 Pi^2) /. runpars; 
+			Return[ mZ * Sqrt[1 + h * aEW * xMMZ[1, 0] + h^2 ( aEW^2 * xMMZ[2,0] + aEW*aQCD * xMMZ[1,1])] /. lc ],	
+			(* else *) Print[" Not All parameters specified "]]];
+
+:Evaluate:  MH[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mH}, 
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+			(* loop corrections *)	lc = XMMH[ Sequence @@ pars];
+			mH = m /. runpars; (* notation *)
+			{aEW, aQCD} = {g1^2*g2^2/(g1^2 + g2^2), gs^2}/(16 Pi^2) /. runpars; 
+			Return[ mH * Sqrt[1 + h * aEW * xMMH[1, 0] + h^2 ( aEW^2 * xMMH[2,0] + aEW*aQCD * xMMH[1,1])] /. lc ],	
+			(* else *) Print[" Not All parameters specified "]]];
+
+:Evaluate:  MT[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mt}, 
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+			(* loop corrections *)	lc = Join[ XMT[ Sequence @@ pars], XMTQCD[ Sequence @@ pars]];
+			Print[ "HELLO:", lc ];
+			vev = Sqrt[m^2/lam/2] /. runpars;
+			mt = yt * vev/ Sqrt[2] /. runpars; 
+			{aEW, aQCD} = {g1^2*g2^2/(g1^2 + g2^2), gs^2}/(16 Pi^2) /. runpars; 
+			Return[ mt * (1 + h * (aQCD * xMTQCD[0,1] + aEW * xMT[1, 0]) + h^2 ( aQCD^2 * xMTQCD[0,2] + aEW^2 * xMT[2,0] + aEW*aQCD * xMT[1,1] ) + h^3 * aQCD^3 * xMTQCD[0,3]) /. lc ],	
 			(* else *) Print[" Not All parameters specified "]]];
 
 // C++ part
 :Begin:
-:Function: XMW
-:Pattern: XMW[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
+:Function: XMMW
+:Pattern: XMMW[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
 :Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale]}
 :ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
 :ReturnType: Manual
@@ -134,16 +175,16 @@
 
 
 :Begin:
-:Function: XMZ
-:Pattern: XMZ[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
+:Function: XMMZ
+:Pattern: XMMZ[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
 :Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale]}
 :ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
 :ReturnType: Manual
 :End:
 
 :Begin:
-:Function: XMH
-:Pattern: XMH[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
+:Function: XMMH
+:Pattern: XMMH[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
 :Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale]}
 :ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
 :ReturnType: Manual

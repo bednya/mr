@@ -214,7 +214,7 @@ void MW(long double gp, long double g, long double gs, long double yb, long doub
   
 }
 
-void XMW(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
+void XMMW(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
 {
   long double mu2 = pow(mu,2);
   MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
@@ -229,13 +229,13 @@ void XMW(long double gp, long double g, long double gs, long double yb, long dou
     for(size_t aspow = 0; aspow + apow <=2; aspow++)
 	{
 		MLPutFunction(stdlink, "Rule", 2);
-		MLPutFunction(stdlink, "xMW", 2);
+		MLPutFunction(stdlink, "xMMW", 2);
 		MLPutInteger(stdlink, apow);
 		MLPutInteger(stdlink, aspow);
   		MLPutReal128(stdlink, WWm.x(apow,aspow));
 	}
  }
-void XMZ(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
+void XMMZ(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
 {
   long double mu2 = pow(mu,2);
   MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
@@ -250,13 +250,13 @@ void XMZ(long double gp, long double g, long double gs, long double yb, long dou
     for(size_t aspow = 0; aspow + apow <=2; aspow++)
 	{
 		MLPutFunction(stdlink, "Rule", 2);
-		MLPutFunction(stdlink, "xMZ", 2);
+		MLPutFunction(stdlink, "xMMZ", 2);
 		MLPutInteger(stdlink, apow);
 		MLPutInteger(stdlink, aspow);
   		MLPutReal128(stdlink, ZZm.x(apow,aspow));
 	}
 }
-void XMH(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
+void XMMH(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
 {
   long double mu2 = pow(mu,2);
   MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
@@ -271,7 +271,7 @@ void XMH(long double gp, long double g, long double gs, long double yb, long dou
     for(size_t aspow = 0; aspow + apow <=2; aspow++)
 	{
 		MLPutFunction(stdlink, "Rule", 2);
-		MLPutFunction(stdlink, "xMH", 2);
+		MLPutFunction(stdlink, "xMMH", 2);
 		MLPutInteger(stdlink, apow);
 		MLPutInteger(stdlink, aspow);
   		MLPutReal128(stdlink, HHm.x(apow,aspow));
