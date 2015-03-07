@@ -26,30 +26,30 @@ ThreeSigmaRange[x_,s_,n_:2] := Module[{step = 6 s /n}, Table[ x - 3 s + step * (
 
 (* find running parameters given (pseudo)observables, and a renormalization scale *)
 
-sol[scale_][mzp_:PDG`MZ,mwp_:PDG`MW,mtp_:PDG`MT,mhp_:PDG`MH,gfp_:PDG`GF,asp_:PDG`asQCD] := Join[FindRoot[ {
-	   MZ[gp, g, gs, yt, lam, mu0, scale,2] == mzp (* 91.1876 *),
-	   MW[gp, g, gs, yt, lam, mu0, scale,2] == mwp (* 80.385 *),
-	   MT[gp, g, gs, yt, lam, mu0, scale,2] == mtp (* scale *),
-	   MH[gp, g, gs, yt, lam, mu0, scale,2] == mhp (* 125.7 *),
-	   GF[gp, g, gs, yt, lam, mu0, scale,2] == gfp (* 0.000011663787 *),
-	   gs^2/(4*Pi)==RunQCD[scale, asp,PDG`MZ,4, PDG`MT] 
+sol[sc_][mzp_:PDG`MZ,mwp_:PDG`MW,mtp_:PDG`MT,mhp_:PDG`MH,gfp_:PDG`GF,asp_:PDG`asQCD] := Join[FindRoot[ {
+	   MZ[g1, g2, gs, 0, yt, lam, m, sc] == mzp (* 91.1876 *),
+	   MW[g1, g2, gs, 0, yt, lam, m, sc] == mwp (* 80.385 *),
+	   MT[g1, g2, gs, 0, yt, lam, m, sc] == mtp (* sc *),
+	   MH[g1, g2, gs, 0, yt, lam, m, sc] == mhp (* 125.7 *),
+	   GF[g1, g2, gs, 0, yt, lam, m, sc] == gfp (* 0.000011663787 *),
+	   gs^2/(4*Pi)==RunQCD[sc, asp,PDG`MZ,4, PDG`MT] 
 	  },{
-		{gp, 0.357561},
-		{g , 0.64822},
+		{g1, 0.357561},
+		{g2 , 0.64822},
 		{gs , 1.1666},
 		{yt,0.93558},
 		{lam,0.12711},
-		{mu0,132.03}
-	  }],{mu -> scale}];
+		{m,132.03}
+	  }],{yb -> 0,scale -> sc}];
 
 (* evaluate chi2 function for given set of running parameters at the given scale *)
 
-chiSquare[sol_,scale_]:=(   
-		(MZ[gp, g, gs, yt, lam, mu0, scale,2] - PDG`MZ)^2/(PDG`dMZ)^2 + 
-	 	(MW[gp, g, gs, yt, lam, mu0, scale,2] - PDG`MW)^2/(PDG`dMW)^2 + 
-		(MT[gp, g, gs, yt, lam, mu0, scale,2] - PDG`MT)^2/(PDG`dMT)^2 + 
-		(MH[gp, g, gs, yt, lam, mu0, scale,2] - PDG`MH)^2/(PDG`dMH)^2 + 
-		(GF[gp, g, gs, yt, lam, mu0, scale,2] - PDG`GF)^2/(PDG`dGF)^2 (* check this *)	 + 
+chiSquare[sol_]:=(   
+		(MZ[g1, g2, gs, 0, yt, lam, m, scale] - PDG`MZ)^2/(PDG`dMZ)^2 + 
+	 	(MW[g1, g2, gs, 0, yt, lam, m, scale] - PDG`MW)^2/(PDG`dMW)^2 + 
+		(MT[g1, g2, gs, 0, yt, lam, m, scale] - PDG`MT)^2/(PDG`dMT)^2 + 
+		(MH[g1, g2, gs, 0, yt, lam, m, scale] - PDG`MH)^2/(PDG`dMH)^2 + 
+		(GF[g1, g2, gs, 0, yt, lam, m, scale] - PDG`GF)^2/(PDG`dGF)^2 (* check this *)	 + 
 		(gs^2/(4 Pi) -  RunQCD[scale, PDG`asQCD,PDG`MZ,4, PDG`MT])^2/(0.0001)^2
 			) /. sol ;
 
