@@ -130,7 +130,7 @@
 
 :Evaluate:  vev[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := 2^(-1/4)/Sqrt[Gf]*Sqrt[(1+aEW[scale]*dr[1,0]+aEW[scale]*aQCD[scale]*dr[1,1]+aEW[scale]^2*dr[2,0])] /.dROS[mb,mW,mZ,mH,mt,scale,nL,nH];
 
-:Evaluate:  MW[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD,mW},
+:Evaluate:  MW[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD,mW, pars = {G1,G2,GS,YB,YT,LAM,M,SC}},
 			(* loop corrections *)	lc = XMMW[ Sequence @@ pars];
 			vev = Sqrt[M^2/LAM/2]; mW = G2 * vev/2.0;
 			{aEW, aQCD} = {G1^2*G2^2/(G1^2 + G2^2), GS^2}/(16 Pi^2);
@@ -152,7 +152,7 @@
 			Return[ mW * Sqrt[1 + h * aEW * xMMW[1, 0] + h^2 ( aEW^2 * xMMW[2,0] + aEW*aQCD * xMMW[1,1])] /. lc ],	
 			(* else *) Print[" Not All parameters specified ", pars, " from ", runpars]]];
 
-:Evaluate:  MZ[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD,mZ},
+:Evaluate:  MZ[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD,mZ, pars = {G1,G2,GS,YB,YT,LAM,M,SC} },
 			(* loop corrections *)	lc = XMMZ[ Sequence @@ pars];
 			vev = Sqrt[M^2/LAM/2]; mZ = Sqrt[G1^2 + G2^2] * vev/2.0;
 			{aEW, aQCD} = {G1^2*G2^2/(G1^2 + G2^2), GS^2}/(16 Pi^2);
@@ -172,7 +172,7 @@
 			(* else *) Print[" Not All parameters specified  ", pars, " from ", runpars]]];
 
 
-:Evaluate:  MH[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD},
+:Evaluate:  MH[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD, pars = {G1,G2,GS,YB,YT,LAM,M,SC} },
 			(* loop corrections *)	lc = XMMH[ Sequence @@ pars];
 			{aEW, aQCD} = {G1^2*G2^2/(G1^2 + G2^2), GS^2}/(16 Pi^2);
 			Return[ M * Sqrt[1 + looptag * aEW * xMMH[1, 0] + looptag^2 ( aEW^2 * xMMH[2,0] + aEW*aQCD * xMMH[1,1])] /. lc ]]	
@@ -192,7 +192,7 @@
 			(* else *) Print[" Not All parameters specified  ", pars, " from ", runpars]]];
 
 
-:Evaluate:  MT[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD,mt},
+:Evaluate:  MT[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD,mt, pars = {G1,G2,GS,YB,YT,LAM,M,SC} },
 			(* loop corrections *)	lc = Join[XMT[ Sequence @@ pars], XMTQCD[ Sequence @@ pars]];
 			{aEW, aQCD} = {G1^2*G2^2/(G1^2 + G2^2), GS^2}/(16 Pi^2);
 			vev = Sqrt[M^2/LAM/2]; mt = YT * vev / Sqrt[2];
@@ -213,7 +213,7 @@
 			Return[ mt * (1 + h * (aQCD * xMTQCD[0,1] + aEW * xMT[1, 0]) + h^2 ( aQCD^2 * xMTQCD[0,2] + aEW^2 * xMT[2,0] + aEW*aQCD * xMT[1,1] ) + h^3 * aQCD^3 * xMTQCD[0,3]) /. lc ],	
 			(* else *) Print[" Not All parameters specified ", pars, " from ", runpars ]]];
 
-:Evaluate:  GF[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vv,lc,aEW,aQCD,gf},
+:Evaluate:  GF[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vv,lc,aEW,aQCD,gf, pars = {G1,G2,GS,YB,YT,LAM,M,SC} },
 			(* loop corrections *)	lc = XdRbar[ Sequence @@ pars];
 			{aEW, aQCD} = {G1^2*G2^2/(G1^2 + G2^2), GS^2}/(16 Pi^2);
 			vv = M^2/LAM/2; gf = 1/Sqrt[2]/vv; 
