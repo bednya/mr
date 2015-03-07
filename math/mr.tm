@@ -95,6 +95,7 @@
 :Evaluate:   m::usage    = "running higgs mass parameter"
 :Evaluate:   scale::usage  = "renormalization scale"
 
+:Evaluate:  Protect[g1,g2,gs,yt,yb,lam,m,scale];
 
 :Evaluate:  Begin["`Private`"]
 
@@ -135,7 +136,7 @@
 			mW = g2 * vev/2.0 /. runpars;
 			{aEW, aQCD} = {g1^2*g2^2/(g1^2 + g2^2), gs^2}/(16 Pi^2) /. runpars; 
 			Return[ mW * Sqrt[1 + h * aEW * xMMW[1, 0] + h^2 ( aEW^2 * xMMW[2,0] + aEW*aQCD * xMMW[1,1])] /. lc ],	
-			(* else *) Print[" Not All parameters specified "]]];
+			(* else *) Print[" Not All parameters specified ", pars, " from ", runpars]]];
 
 :Evaluate:  MZ[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mZ}, 
 			(* check numeric *) If [ And @@ NumericQ /@ pars, 
@@ -144,7 +145,7 @@
 			mZ = Sqrt[g1^2 + g2^2] * vev/2.0 /. runpars;
 			{aEW, aQCD} = {g1^2*g2^2/(g1^2 + g2^2), gs^2}/(16 Pi^2) /. runpars; 
 			Return[ mZ * Sqrt[1 + h * aEW * xMMZ[1, 0] + h^2 ( aEW^2 * xMMZ[2,0] + aEW*aQCD * xMMZ[1,1])] /. lc ],	
-			(* else *) Print[" Not All parameters specified "]]];
+			(* else *) Print[" Not All parameters specified  ", pars, " from ", runpars]]];
 
 :Evaluate:  MH[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mH}, 
 			(* check numeric *) If [ And @@ NumericQ /@ pars, 
@@ -152,17 +153,27 @@
 			mH = m /. runpars; (* notation *)
 			{aEW, aQCD} = {g1^2*g2^2/(g1^2 + g2^2), gs^2}/(16 Pi^2) /. runpars; 
 			Return[ mH * Sqrt[1 + h * aEW * xMMH[1, 0] + h^2 ( aEW^2 * xMMH[2,0] + aEW*aQCD * xMMH[1,1])] /. lc ],	
-			(* else *) Print[" Not All parameters specified "]]];
+			(* else *) Print[" Not All parameters specified  ", pars, " from ", runpars]]];
 
 :Evaluate:  MT[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vev, lc, aEW, aQCD, mt}, 
 			(* check numeric *) If [ And @@ NumericQ /@ pars, 
 			(* loop corrections *)	lc = Join[ XMT[ Sequence @@ pars], XMTQCD[ Sequence @@ pars]];
-			Print[ "HELLO:", lc ];
 			vev = Sqrt[m^2/lam/2] /. runpars;
 			mt = yt * vev/ Sqrt[2] /. runpars; 
 			{aEW, aQCD} = {g1^2*g2^2/(g1^2 + g2^2), gs^2}/(16 Pi^2) /. runpars; 
 			Return[ mt * (1 + h * (aQCD * xMTQCD[0,1] + aEW * xMT[1, 0]) + h^2 ( aQCD^2 * xMTQCD[0,2] + aEW^2 * xMT[2,0] + aEW*aQCD * xMT[1,1] ) + h^3 * aQCD^3 * xMTQCD[0,3]) /. lc ],	
-			(* else *) Print[" Not All parameters specified "]]];
+			(* else *) Print[" Not All parameters specified ", pars, " from ", runpars ]]];
+
+:Evaluate:  GF[runpars_List]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, vv, lc, aEW, aQCD, gf}, 
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+			(* loop corrections *)	lc = XdRbar[ Sequence @@ pars];
+			vv = m^2/lam/2 /. runpars;
+			gf = 1/Sqrt[2]/vv /. runpars; 
+			{aEW, aQCD} = {g1^2*g2^2/(g1^2 + g2^2), gs^2}/(16 Pi^2) /. runpars; 
+			Return[ gf * (1 + h * aEW * xdRbar[1, 0] + h^2 (  aEW^2 * xdRbar[2,0] + aEW*aQCD * xdRbar[1,1] ) ) /. lc ],	
+			(* else *) Print[" Not All parameters specified " , pars, " from ", runpars ]]];
+
+
 
 // C++ part
 :Begin:
