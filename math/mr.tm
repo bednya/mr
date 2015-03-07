@@ -20,6 +20,11 @@
 :Evaluate:  GF::usage  = "GF[gp,g,gs,yb,yt,lam,m,scale,L=2] returns Fermi constant GF given  MSbar parameters at specified scale at L-loop level"
 
 
+:Evaluate:  XMW::usage  = "XMW[gp,g,gs,yb,yt,lam,m,scale] returns contributions to the pole W-boson mass MW given  MSbar parameters at specified scale"
+:Evaluate:  XMT::usage  = "XMT[gp,g,gs,yb,yt,lam,m,scale] returns electroweak contributions to the pole top quark mass MT given  MSbar parameters at specified scale"
+:Evaluate:  XMTQCD::usage  = "XMT[gp,g,gs,yb,yt,lam,m,scale] returns pure QCD contributions to the pole top quark mass MT given  MSbar parameters at specified scale"
+
+
 :Evaluate:  Xb::usage  = "Xb[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  Input is in terms of pole masses and matching scale, nL and nH are number of light and heavy quark genrations "
 :Evaluate:  XW::usage  = "XW[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  Input is in terms of pole masses and matching scale, nL and nH are number of light and heavy quark genrations "
 :Evaluate:  XZ::usage  = "XZ[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  Input is in terms of pole masses and matching scale, nL and nH are number of light and heavy quark genrations "
@@ -115,6 +120,30 @@
 			(* else *) Print[" Not All parameters specified "]]];
 
 // C++ part
+:Begin:
+:Function: XMW
+:Pattern: XMW[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale]}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
+:ReturnType: Manual
+:End:
+
+:Begin:
+:Function: XMT
+:Pattern: XMT[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale]}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
+:ReturnType: Manual
+:End:
+
+:Begin:
+:Function: XMTQCD
+:Pattern: XMTQCD[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ]
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[scale]}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
+:ReturnType: Manual
+:End:
+
 :Begin:
 :Function: MW
 :Pattern: MW[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,scale_?NumericQ,L_Integer:2]

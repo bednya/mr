@@ -214,6 +214,75 @@ void MW(long double gp, long double g, long double gs, long double yb, long doub
   
 }
 
+void XMW(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
+{
+  long double mu2 = pow(mu,2);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
+  
+  WW<MS> WWm = get_WWbar(mi, mu2);
+
+
+  MLPutFunction(stdlink, "List", 3);
+
+
+  for(size_t apow = 1; apow <=2; apow++)
+    for(size_t aspow = 0; aspow + apow <=2; aspow++)
+	{
+		MLPutFunction(stdlink, "Rule", 2);
+		MLPutFunction(stdlink, "xMW", 2);
+		MLPutInteger(stdlink, apow);
+		MLPutInteger(stdlink, aspow);
+  		MLPutReal128(stdlink, WWm.x(apow,aspow));
+	}
+ }
+
+void XMT(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
+{
+  long double mu2 = pow(mu,2);
+
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
+  
+  tt<MS> ttm = get_ttbar(mi, mu2);
+
+
+  MLPutFunction(stdlink, "List", 3);
+
+
+  for(size_t apow = 1; apow <=2; apow++)
+    for(size_t aspow = 0; aspow + apow <=2; aspow++)
+	{
+		MLPutFunction(stdlink, "Rule", 2);
+		MLPutFunction(stdlink, "xMT", 2);
+		MLPutInteger(stdlink, apow);
+		MLPutInteger(stdlink, aspow);
+  		MLPutReal128(stdlink, ttm.x(apow,aspow));
+	}
+ }
+
+
+void XMTQCD(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
+{
+  long double mu2 = pow(mu,2);
+
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
+  
+  tt<MS> ttm = get_ttbar(mi, mu2);
+
+
+  MLPutFunction(stdlink, "List", 3);
+
+
+  for(size_t aspow = 1; aspow <=3; aspow++)
+	{
+		MLPutFunction(stdlink, "Rule", 2);
+		MLPutFunction(stdlink, "xMTQCD", 2);
+		MLPutInteger(stdlink, 0);
+		MLPutInteger(stdlink, aspow);
+  		MLPutReal128(stdlink, ttm.x(0,aspow));
+	}
+ }
+
+
 void MZ(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
