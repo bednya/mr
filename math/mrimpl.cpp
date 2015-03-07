@@ -193,7 +193,7 @@ void MWp(long double gp, long double g, long double gs, long double yb, long dou
    } else MLPutSymbol(stdlink,"$Failed") ;
   
 }
-
+/*
 void MW(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
@@ -213,7 +213,7 @@ void MW(long double gp, long double g, long double gs, long double yb, long doub
   MLPutReal128(stdlink, MWpole);
   
 }
-
+*/
 void XMMW(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu) 
 {
   long double mu2 = pow(mu,2);
@@ -355,7 +355,7 @@ void XMTQCD(long double gp, long double g, long double gs, long double yb, long 
 	}
  }
 
-
+/*
 void MZ(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
@@ -375,7 +375,7 @@ void MZ(long double gp, long double g, long double gs, long double yb, long doub
   MLPutReal128(stdlink, MZpole);
   
 }
-
+*/
 void MZp(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
@@ -480,6 +480,7 @@ void RunSM(long double gp, long double g, long double gs, long double yb, long d
 		
 }
 
+/*
 void MH(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
@@ -499,7 +500,7 @@ void MH(long double gp, long double g, long double gs, long double yb, long doub
   MLPutReal128(stdlink, MHpole);
   
 }
-
+*/
 void MHp(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
@@ -613,6 +614,7 @@ void MTp(long double gp, long double g, long double gs, long double yb, long dou
 
 }
 
+/*
 void MT(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
@@ -635,6 +637,8 @@ void MT(long double gp, long double g, long double gs, long double yb, long doub
   MLPutReal128(stdlink, MTpole);
   
 }
+*/
+/*
 void GF(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
 {
   long double mu2 = pow(mu,2);
@@ -654,7 +658,49 @@ void GF(long double gp, long double g, long double gs, long double yb, long doub
   MLPutReal128(stdlink, GF);
   
 }
+*/
+void GFp(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double mu, int L) 
+{
+  long double mu2 = pow(mu,2);
+  MSinput mi = MSinput::fromConsts(mu2, mu0, lam, yb, yt, g, gp);
+  
+  dr<MS> drm = get_drbar(mi, mu2);
 
+  long double aEW  = mi.alpha()/4./Pi;
+  long double aQCD = pow(gs/4./Pi,2);
+
+  long double dGF = 0;
+  if (L>0) dGF += aEW*drm.dr10();
+  if (L>1) dGF += aEW*aQCD*drm.dr11() 
+	  	  +aEW*aEW*drm.dr20();
+
+  long double GF = (1 + dGF)/sqrt(2.0)/pow(mi.vev(),2);
+  MLPutReal128(stdlink, GF);
+
+  MLPutFunction(stdlink,"Times",2);
+  MLPutReal128(stdlink,1/sqrt(2.0)/pow(mi.vev(),2));
+  if ((L<3) && (L>=0)) {
+  	MLPutFunction(stdlink,"Plus",L+1);
+	MLPutReal128(stdlink,1.0);
+  	if (L>0) {
+		MLPutFunction(stdlink,"Times",2);
+		MLPutSymbol(stdlink,"aew");
+		MLPutReal128(stdlink,aEW*drm.dr10()); 
+	}
+  	if (L>1) {
+		MLPutFunction(stdlink,"Plus",2);
+		 MLPutFunction(stdlink,"Times",3);
+		  MLPutSymbol(stdlink,"aew");
+		  MLPutSymbol(stdlink,"as");
+		  MLPutReal128(stdlink,aEW*aQCD*drm.dr11());
+		 MLPutFunction(stdlink,"Times",3);
+		  MLPutSymbol(stdlink,"aew");
+		  MLPutSymbol(stdlink,"aew");
+		  MLPutReal128(stdlink,aEW*aEW*drm.dr20());
+	}
+   } else MLPutSymbol(stdlink,"$Failed") ;
+  
+}
 void XW(long double mb, long double mW, long double mZ, long double mH, long double mt, long double mu, int nL,int nH) 
 {
   OSinput oi(mb, mW, mZ, mH, mt);
