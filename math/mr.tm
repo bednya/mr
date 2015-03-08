@@ -48,7 +48,7 @@
 
 :Evaluate:  a1::usage  = "a1[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  returns a1=5/3(g1/(4\[Pi]))^2 as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2, we use GUT normalization"
 :Evaluate:  a2::usage  = "a2[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  returns a2=(g2/(4\[Pi]))^2 as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2"
-:Evaluate:  at::usage  = "a1[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  returns at=(yt/(4\[Pi]))^2 as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2"
+:Evaluate:  at::usage  = "at[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  returns at=(yt/(4\[Pi]))^2 as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2"
 :Evaluate:  ab::usage  = "ab[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  returns ab=(yb/(4\[Pi]))^2 as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2"
 :Evaluate:  alam::usage  = "alam[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1] returns alam=\[Lambda]/(4\[Pi])^2 as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2"
 :Evaluate:  vev::usage  = "vev[Mb,MW,MZ,MH,Mt,scale,nL=2,nH=1]  returns running vev[scale] as a series in running aEW[scale] = e^2/(4 Pi)^2 and aQCD[scale] = gs^2/(4Pi)^2"
@@ -120,9 +120,9 @@
 
 :Evaluate:  a2[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := 2^(5/2)*Gf/(4*Pi)^2*mW^2*(1+aEW[scale]*yW[1,0]+aEW[scale]*aQCD[scale]*yW[1,1]+aEW[scale]^2*yW[2,0])/.XW[mb,mW,mZ,mH,mt,scale,nL,nH];
 
-:Evaluate:  at[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := 2^(3/4)*Sqrt[Gf]/(4*Pi)^2*mt*(1+aQCD[scale]*xt[0,1] + aEW[scale]*yt[1,0]+aEW[scale]*aQCD[scale]*yt[1,1]+aEW[scale]^2*yt[2,0] + aQCD[scale]^2*xt[0,2] + aQCD[scale]^3*xt[0,3])/.Xt[mb,mW,mZ,mH,mt,scale,nL,nH] /. XtQCD[mb,mW,mZ,mH,mt,scale,nL,nH];
+:Evaluate:  at[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := (2^(3/4)*Sqrt[Gf]/(4*Pi)*mt*(1+aQCD[scale]*xt[0,1] + aEW[scale]*yt[1,0]+aEW[scale]*aQCD[scale]*yt[1,1]+aEW[scale]^2*yt[2,0] + aQCD[scale]^2*xt[0,2] + aQCD[scale]^3*xt[0,3])/.Xt[mb,mW,mZ,mH,mt,scale,nL,nH] /. XtQCD[mb,mW,mZ,mH,mt,scale,nL,nH])^2;
 
-:Evaluate:  ab[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := 2^(3/4)*Sqrt[Gf]/(4*Pi)^2*mb*(1+aQCD[scale]*xb[0,1]+aEW[scale]*yb[1,0]+aEW[scale]*aQCD[scale]*yb[1,1]+aEW[scale]^2*yb[2,0] + aQCD[scale]^2*xb[0,2] + aQCD[scale]^3*xb[0,3])/.Xb[mb,mW,mZ,mH,mt,scale,nL,nH] /. XbQCD[mb,mW,mZ,mH,mt,scale,nL,nH];
+:Evaluate:  ab[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := (2^(3/4)*Sqrt[Gf]/(4*Pi)*mb*(1+aQCD[scale]*xb[0,1]+aEW[scale]*yb[1,0]+aEW[scale]*aQCD[scale]*yb[1,1]+aEW[scale]^2*yb[2,0] + aQCD[scale]^2*xb[0,2] + aQCD[scale]^3*xb[0,3])/.Xb[mb,mW,mZ,mH,mt,scale,nL,nH] /. XbQCD[mb,mW,mZ,mH,mt,scale,nL,nH]);
 
 :Evaluate:  alam[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := 2^(-1/2)*Gf/(4*Pi)^2*mH^2*(1+aEW[scale]*yH[1,0]+aEW[scale]*aQCD[scale]*yH[1,1]+aEW[scale]^2*yH[2,0])/.XH[mb,mW,mZ,mH,mt,scale,nL,nH];
 
