@@ -5,7 +5,8 @@
 :Evaluate:  BeginPackage["mr`"]
 
 :Evaluate:  RunQCD::usage  = "RunQCD[oscale,asMZ, MZscale,L=4, mtth] evaluate alphas at specified oscale given asMZ at MZscale (nf=5) with L-loop RGE with top threshold at mtth"
-:Evaluate:  RunSM::usage  = "RunSM[gp,g,gs,yt,lam,m,iscale,oscale] return running parameters at specified oscale given the values at specified iscale"
+:Evaluate:  RunSM::usage  = "RunSM[gp,g,gs,yt,lam,m,iscale,oscale] return running parameters at specified oscale given the values at specified iscale;
+			     RunSM[pars_,oscale] returns a list {g1 -> ..., g2 -> ..., ..., scale -> oscale} of running parameters given a list pars";
 
 
 :Evaluate:  MW::usage  = "MW[gp,g,gs,yb,yt,lam,m,scale] returns pole W-boson mass MW given  MSbar parameters at specified scale at 2-loop level"
@@ -234,7 +235,13 @@
 			(* else *) Print[" Not All parameters specified " , pars, " from ", runpars ]]];
 
 
-
+:Evaluate: RunSM[runpars_List, oscale_?NumericQ] :=  Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars, res}, 
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+			res = RunSM[ Sequence @@ pars, oscale];
+			res = MapThread[ #1 -> #2 & , {{g1,g2,gs,yb,yt,lam,m,scale},res}];
+			Return[ res ],
+			(* else *) Print[" Not All parameters specified " , pars, " from ", runpars ]]];
+		
 // C++ part
 :Begin:
 :Function: XMMW
