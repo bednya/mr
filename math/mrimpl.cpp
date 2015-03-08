@@ -468,14 +468,14 @@ void RunSM(long double gp, long double g, long double gs, long double yb, long d
                 );
 
       state_type runCoupling = runSM(pow(oscale,2));
-      MLPutFunction(stdlink, "List", 7);
+      MLPutFunction(stdlink, "List", 8);
       MLPutReal128(stdlink, 4.*Pi*sqrt(3/5.*runCoupling[0])); //gp
       MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[1])); //g 
       MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[2])); //gs
       MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[4])); //yb
       MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[3])); //yt
       MLPutReal128(stdlink, pow(4.*Pi,2)*runCoupling[6]); //lam
-      MLPutReal128(stdlink, runCoupling[7]); //mu ??
+      MLPutReal128(stdlink, runCoupling[7]); //m ??
       MLPutReal128(stdlink, oscale); // out scale
 		
 }
