@@ -19,7 +19,8 @@ $PDGdata[2014] = {
 $DegrassiEtAlValues = {
 		  ASqcdNf5atMZ -> 0.1184, d[ASqcdNf5atMZ] -> 0.0007, 
                   MTpole -> 173.34,  d[MTpole] -> Sqrt[ 0.3^2 + 0.76^2], (* GeV *)
-		  MBpole ->  4.78, d[MBpole] ->  0.06, (* GeV *)
+		  (* MBpole ->  4.78, d[MBpole] ->  0.06, (* GeV *) *)
+		  MBpole ->  0, d[MBpole] ->  0, (* GeV *)
 		  MWpole -> 80.384,  d[MWpole] -> 0.014, (* GeV *)
 		  MZpole -> 91.1876, d[MZpole] -> 0.0021, (* GeV *)
 		  MHpole -> 125.15,   d[MHpole] -> 0.24,(* GeV *)
@@ -48,16 +49,15 @@ SetPDGValues[smdata_:$PDGdata[$PDGYear]] := (
 		
 
 (* Default "PDG" values *)
-SetPDGValues[]
 
 ReportPDGValues[] := (
-		      Print["MW = ", PDG`MW, "+/-",PDG`dMW," GeV"];
-		      Print["MZ = ", PDG`MZ, "+/-",PDG`dMZ," GeV"];
-		      Print["MH = ", PDG`MH, "+/-",PDG`dMH," GeV"];
-		      Print["MT = ", PDG`MT, "+/-",PDG`dMT," GeV"];
-		      Print["MB = ", PDG`MB, "+/-",PDG`dMB," GeV"];
-		      Print["GF = (", PDG`GF*1^5, "+/-",PDG`dGF*10^5,")*10^-5 GeV^-2"];
-		      Print["as(MZ) = ", PDG`asQCD, "+/-",PDG`dasQCD];
+		      Print["MW = ", PDG`MW, "\[PlusMinus]",PDG`dMW," GeV"];
+		      Print["MZ = ", PDG`MZ, "\[PlusMinus]",PDG`dMZ," GeV"];
+		      Print["MH = ", PDG`MH, "\[PlusMinus]",PDG`dMH," GeV"];
+		      Print["MT = ", PDG`MT, "\[PlusMinus]",PDG`dMT," GeV"];
+		      Print["MB = ", PDG`MB, "\[PlusMinus]",PDG`dMB," GeV"];
+		      Print["GF = (", PDG`GF*1^5, "\[PlusMinus]",PDG`dGF*10^5,")*10^-5 GeV^-2"];
+		      Print["as(MZ) = ", PDG`asQCD, "\[PlusMinus]",PDG`dasQCD];
 		     );
 
 
@@ -123,32 +123,57 @@ EstimateTheorUncertaintyInMatchingDegrassi[sc_, scfactor_:10] := Module[ {
 	  		ppp = sol[sc scfactor][],
 			pppe,
 	  		mmm = sol[sc/scfactor][],
-			mmme
+			mmme,
+			pars = {g1,g2,gs,yb,yt,lam,m,scale}
 	 		 },
+
+Print["Check QCD vs SM (MT):", RunQCD[sc, PDG`asQCD,PDG`MZ,4, PDG`MT], " vs ", gs^2/(4 Pi) /. ref];
+Print["Check QCD vs SM (MT*10):", RunQCD[sc*scfactor, PDG`asQCD,PDG`MZ,4, PDG`MT]," vs ", gs^2/(4 Pi) /. ppp];
+Print["Check QCD vs SM (MT/10):", RunQCD[sc/scfactor, PDG`asQCD,PDG`MZ,4, PDG`MT], " vs ", gs^2/(4 Pi) /. mmm];
+
 			refe = RunParsFromPoleMassesAndAsWithMb[][gs^2/(4 Pi) /. ref, sc];
+			refeAGF = RunParsFromPoleMassesAndAsAndGf[][gs^2/(4 Pi) /. ref, sc];
+
 			pppe = RunParsFromPoleMassesAndAsWithMb[][gs^2/(4 Pi) /. ppp, sc scfactor];
 			pppeR = RunSM[ pppe, sc]; 
+
+			pppeAGF = RunParsFromPoleMassesAndAsAndGf[][gs^2/(4 Pi) /. ppp, sc scfactor];
+			pppeAGFR = RunSM[ pppeAGF, sc]; 
+
 			mmme = RunParsFromPoleMassesAndAsWithMb[][gs^2/(4 Pi) /. mmm, sc / scfactor];
 			mmmeR = RunSM[ mmme, sc]; 
+
+			mmmeAGF = RunParsFromPoleMassesAndAsAndGf[][gs^2/(4 Pi) /. mmm, sc / scfactor];
+			mmmeAGFR = RunSM[ mmmeAGF, sc]; 
 (*
 			Print[" check ppp := ", RunSM[ Sequence @@ ({g1,g2,gs,yb,yt,lam,m,scale} /. ppp), sc]];
 			Print[" check mmm := ", RunSM[ Sequence @@ ({g1,g2,gs,yb,yt,lam,m,scale} /. mmm), sc]];
 *)
-			ppp = RunSM[ ppp, sc]; (* sc*scfactor -> sc *)
-			mmm = RunSM[ mmm, sc]; (* sc/scfactor -> sc *)
+			ppps = RunSM[ ppp, sc]; (* sc*scfactor -> sc *)
+			mmms = RunSM[ mmm, sc]; (* sc/scfactor -> sc *)
 Print["ref=", ref];
 Print["refe=", refe];
+Print["refeAGF=", refeAGF];
+
+Print["ppps=", ppps];
+Print["mmms=", mmms];
+Print["pppeR=", pppeR];
+Print["pppeAGFR=", pppeAGFR];
+Print["mmmeR=", mmmeR];
+Print["mmmeAGFR=", mmmeAGFR];
 
 Print["ppp=", ppp];
 Print["pppe=", pppe];
-Print["pppeR=", pppeR];
+Print["pppeAGF=", pppeAGF];
 
 Print["mmm=", mmm];
 Print["mmme=", mmme];
-Print["mmmeR=", mmmeR];
+Print["mmmeAGF=", mmmeAGF];
+
+			
 
 			(*MapThread[ #1 /. Rule[a_,b_]:> Rule[a, {b,1-#2/b,1-#3/b}] &,{ref,ppp,mmm}]*)	
-	Return[0];
+	Return[Map[ (# -> {# /. ppps, # /. ref, # /. mmms})&, pars]];
 			] 
 
 EstimateTheorUncertainty[ gp_, g_, gs_, yt_, lam_, mu0_,scale_, loop_:2, scalefactor_:2] := Module[ { 
@@ -213,12 +238,14 @@ RunParsFromPoleMassesAndAs[mz_:PDG`MZ,mw_:PDG`MW,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`G
 (* NB: one needs to supply running as! *)
 
 RunParsFromPoleMassesAndAsWithMb[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew},
+Print["DEBUG: mb = ", mb];
 		aa1 = (4 Pi) 3/5 * a1[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
 		aa2 = (4 Pi)       a2[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
 		impliciteq = (aew == (Simplify[aa1*aa2/(aa1 + aa2)]));
 		impliciteqcheck = (aew == Normal[Series[Simplify[aa1*aa2/(aa1 + aa2)], {aew,0,2}]]);
 		(* solution for alpha ew at the scale *)
 		solaew = FindRoot[ impliciteq, {aew, 1/127.94}]; 
+Print["DEBUG: 1/aewSol = ", 1/aew /. solaew];
 		(* Couplings *)
 		res = { g1->Sqrt[ (4 Pi)^2 3/5 a1[mb, mw,mz,mh,mt,smu]], 
 		  g2 -> Sqrt[ (4 Pi)^2 a2[mb,mw,mz,mh,mt,smu]],
@@ -241,6 +268,34 @@ RunParsFromPoleMassesAndAsWithMb[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh
 		  ];
 		];
 
+RunParsFromPoleMassesAndAsAndGf[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res},
+		aew = alphaGF[ mb, mw, mz, mh, mt, smu] /. aQCD[smu] -> asmu/(4 Pi) /. Gf -> gf; 
+Print["DEBUG: 1/aewGF = ", 1/aew];
+		(* Couplings *)
+		res = { g1->Sqrt[ (4 Pi)^2 3/5 a1[mb, mw,mz,mh,mt,smu]], 
+		  g2 -> Sqrt[ (4 Pi)^2 a2[mb,mw,mz,mh,mt,smu]],
+		  gs -> Sqrt[ (4 Pi) asmu],
+		  yb -> Sqrt[ (4 Pi)^2 ab[mb, mw,mz,mh,mt,smu]],
+		  yt -> Sqrt[ (4 Pi)^2 at[mb, mw,mz,mh,mt,smu]],
+		  lam -> (4 Pi)^2 alam[mb,mw,mz,mh,mt,smu], 
+		(* ms(mu) = mh(mu) ? *)
+		    m -> mh * Sqrt[mmHMMH[mb,mw,mz,mh,mt,smu]],
+		    vev -> vev[mb,mw,mz,mh,mt,smu],
+		    scale -> smu};
+		(*		Print[res, ":::",2^(-1/2)*Gf/(4*Pi)^2*mh^2*(1+aEW[mu]*yH[1,0]+aEW[mu]*aQCD[mu]*yH[1,1]+aEW[mu]^2*yH[2,0]) /. mu->smu/. XH[mb,mw,mz,mh,mt,smu,1,2], "::",alam[mb, mw,mz,mh,mt,smu], ":::", XH[mb,mw,mz,mh,mt,smu,2,1]];*)
+	       	res = res /. {aQCD[smu]-> looptag "asmu" asmu/(4 Pi), Gf->gf, aEW[smu]-> looptag "aew" aew/(4 Pi)};
+		(*Print["1/a=", 1/aew /. solaew];
+		Print["as=", asmu,":", res, "->",res /. h->1];*)
+		If[ NumericQ[looptag], Return[ res /. xx_String -> 1 (* remove string tags *)], 
+		(* else *) 
+		(* Return[ res /. (a_->b_):>(a->(b/. looptag->0)*corr[Collect[1/(b/.looptag->0)*(Normal[Series[b,{looptag,0,2}]]),looptag,Expand], (b /. lootag->1)])] *)
+		Return[ res /. (a_->b_):>(a->(b/. looptag->0)*corr[Collect[1/(b/.looptag->0)*(Normal[Series[b,{looptag,0,2}]]),looptag,Expand], (b /. looptag->1 /. xx_String->1)/(b /. looptag->0)])]
+		  ];
+		];
+
+
+(* NB: this should be after all definitions, or default values will not change after update ofr PDG values *)
+SetPDGValues[]
 
 alpha[gp_,g_] := g^2 gp^2/(g^2 + gp^2)/(4 Pi)
 alpha[runpars_List] := (g1^2 g2^2/(g1^2 + g2^2)/(4 Pi)) /. runpars
