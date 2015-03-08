@@ -126,7 +126,7 @@
 
 :Evaluate:  alam[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := 2^(-1/2)*Gf/(4*Pi)^2*mH^2*(1+aEW[scale]*yH[1,0]+aEW[scale]*aQCD[scale]*yH[1,1]+aEW[scale]^2*yH[2,0])/.XH[mb,mW,mZ,mH,mt,scale,nL,nH];
 
-:Evaluate:  alphaGF[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := Module[{alGF = 2^(1/2)*Gf*mW^2*(1-mW^2/mZ^2)/Pi},alGF*(1 + h alGF/(4 Pi)*daGF[1,0] + h^2 alGF/(4 Pi)*aQCD[scale]*daGF[1,1]+ h^2 alGF^2/(4 Pi)^2*daGF[2,0])/.dalphaGF[mb,mW,mZ,mH,mt,scale,nL,nH]];
+:Evaluate:  alphaGF[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := Module[{alGF = 2^(1/2)*Gf*mW^2*(1-mW^2/mZ^2)/Pi},alGF*(1 + alGF/(4 Pi)*daGF[1,0] + alGF/(4 Pi)*aQCD[scale]*daGF[1,1]+  alGF^2/(4 Pi)^2*daGF[2,0])/.dalphaGF[mb,mW,mZ,mH,mt,scale,nL,nH]];
 
 
 :Evaluate:  vev[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := 2^(-1/4)/Sqrt[Gf]*Sqrt[(1+aEW[scale]*dr[1,0]+aEW[scale]*aQCD[scale]*dr[1,1]+aEW[scale]^2*dr[2,0])] /.dROS[mb,mW,mZ,mH,mt,scale,nL,nH];
