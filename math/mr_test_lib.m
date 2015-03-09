@@ -15,23 +15,27 @@ chiSquare[sol]
 
 ReportPDGValues[]
 
+matchscale = PDG`MT;
 
-inipars = RunParsFromPoleMassesAndGf[1][PDG`MT]
-iniparsn = Last /@ RunParsFromPoleMassesAndGf[1][PDG`MT]
+inipars = RunParsFromPoleMassesAndGf[1][matchscale]
+iniparsn = Last /@ inipars;
 
 Needs["NumericalCalculus`"]
 
 
 Print["MT"];
-mtderiv = ND[ RunParsFromPoleMassesAndGfList[1][mt,PDG`MT], mt, PDG`MT];
+mtderiv = ND[ RunParsFromPoleMassesAndGfList[1][mt,matchscale]*PDG`dMT, mt, PDG`MT];
 Print["MH"];
-mhderiv = ND[ RunParsFromPoleMassesAndGfList[1][PDG`MT,mh,PDG`MT], mh, PDG`MH];
+mhderiv = ND[ RunParsFromPoleMassesAndGfList[1][PDG`MT,mh,matchscale]*PDG`dMH, mh, PDG`MH];
 Print["MW"];
-mwderiv = ND[ RunParsFromPoleMassesAndGfList[1][PDG`MT,PDG`MH,PDG`asQCD,mw,PDG`MT]*PDG`dMW, mw, PDG`MW];
+mwderiv = ND[ RunParsFromPoleMassesAndGfList[1][PDG`MT,PDG`MH,PDG`asQCD,mw,matchscale]*PDG`dMW, mw, PDG`MW];
 Print["as"]
-asderiv = ND[ RunParsFromPoleMassesAndGfList[][PDG`MT,PDG`MH,as,PDG`MT]*PDG`dasQCD, as, PDG`asQCD];
+asderiv = ND[ RunParsFromPoleMassesAndGfList[][PDG`MT,PDG`MH,as,matchscale]*PDG`dasQCD, as, PDG`asQCD];
 
-ress = MapThread[First[#1] -> #2 &, {inipars,iniparsn + df["MT" - PDG`MT] * mtderiv + df["MH" - PDG`MH] * mhderiv + df["MW" - PDG`MW,PDG`dMW] * mwderiv  + df["as" - PDG`asQCD,PDG`dasQCD] * asderiv}] 
+ress = MapThread[First[#1] -> #2 &, {inipars,iniparsn + df["MT" - PDG`MT,PDG`dMT] * mtderiv + df["MH" - PDG`MH,PDG`dMH] * mhderiv + df["MW" - PDG`MW,PDG`dMW] * mwderiv  + df["as" - PDG`asQCD,PDG`dasQCD] * asderiv}] 
+
+ress >> "pdg2014_runpars_MT"
+
 Quit[]
 
 
