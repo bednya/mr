@@ -286,6 +286,8 @@ RunParsFromPoleMassesAndAs[mz_:PDG`MZ,mw_:PDG`MW,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`G
 (* move important parrameters to the beginning *)
 RunParsFromPoleMassesAndGfalpha[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCD[smu,asMZ,mz,4,mt]},
 			RunParsFromPoleMassesAndAsWithMb[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
+RunParsFromPoleMassesAndGfalphaList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCD[smu,asMZ,mz,4,mt]},
+			RunParsFromPoleMassesAndAsWithMb[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
 
 RunParsFromPoleMassesAndAsWithMb[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew},
 DebugPrint["DEBUG: mb = ", mb];
@@ -324,6 +326,8 @@ RunParsFromPoleMassesAndGf[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`
 *)
 RunParsFromPoleMassesAndGf[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCD[smu,asMZ,mz,4,mt]},
 			RunParsFromPoleMassesAndAsAndGf[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
+RunParsFromPoleMassesAndGfList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCD[smu,asMZ,mz,4,mt]},
+			Last /@ RunParsFromPoleMassesAndAsAndGf[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
 
 RunParsFromPoleMassesAndAsAndGf[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res},
 		aew = alphaGF[ mb, mw, mz, mh, mt, smu] /. aQCD[smu] -> asmu/(4 Pi) /. Gf -> gf; 
