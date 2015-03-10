@@ -9,7 +9,7 @@ $PDGdata[2014] = {
 		  SW2NDatMZ -> 0.23144, (* from Review on EW physics *) 
 		  SW2OS -> 0.22333,(* from Review on EW physics *)
                   MTpole -> 173.21,  d[MTpole] -> Sqrt[ 0.51^2 + 0.71^2], (* GeV *)
-		  MBpole ->  4.78, d[MBpole] ->  0.06, (* GeV *)
+		  MBpole ->  4.93482 (* PDG 2-loop quoted 4.78 *), d[MBpole] ->  0.06, (* GeV *)
 		  MWpole -> 80.385,  d[MWpole] -> 0.015, (* GeV *)
 		  MZpole -> 91.1876, d[MZpole] -> 0.0021, (* GeV *)
 		  MHpole -> 125.7,   d[MHpole] -> 0.4,(* GeV *)
@@ -74,7 +74,7 @@ sol[sc_][mzp_:PDG`MZ,mwp_:PDG`MW,mtp_:PDG`MT,mhp_:PDG`MH,gfp_:PDG`GF,asp_:PDG`as
 	   MT[g1, g2, gs, 0, yt, lam, m, sc] == mtp (* sc *),
 	   MH[g1, g2, gs, 0, yt, lam, m, sc] == mhp (* 125.7 *),
 	   GF[g1, g2, gs, 0, yt, lam, m, sc] == gfp (* 0.000011663787 *),
-	   gs^2/(4*Pi)==RunQCD[sc, asp,PDG`MZ,4, PDG`MT] 
+	   gs^2/(4*Pi)==RunQCDnf6[sc, asp,PDG`MZ,4, PDG`MT] 
 	  },{
 		{g1, 0.357561},
 		{g2 , 0.64822},
@@ -92,7 +92,7 @@ chiSquare[sol_]:=(
 		(MT[g1, g2, gs, 0, yt, lam, m, scale] - PDG`MT)^2/(PDG`dMT)^2 + 
 		(MH[g1, g2, gs, 0, yt, lam, m, scale] - PDG`MH)^2/(PDG`dMH)^2 + 
 		(GF[g1, g2, gs, 0, yt, lam, m, scale] - PDG`GF)^2/(PDG`dGF)^2 (* check this *)	 + 
-		(gs^2/(4 Pi) -  RunQCD[scale, PDG`asQCD,PDG`MZ,4, PDG`MT])^2/(0.0001)^2
+		(gs^2/(4 Pi) -  RunQCDnf6[scale, PDG`asQCD,PDG`MZ,4, PDG`MT])^2/(0.0001)^2
 			) /. sol ;
 
 (* theoretical error for observables *)
@@ -127,9 +127,9 @@ EstimateTheorUncertaintyInMatchingDegrassi[sc_, scfactor_:10] := Module[ {
 			pars = {g1,g2,gs,yb,yt,lam,m,scale}
 	 		 },
 
-DebugPrint["Check QCD vs SM (MT):",    RunQCD[sc, PDG`asQCD,PDG`MZ,4, PDG`MT], " vs ", gs^2/(4 Pi) /. ref];
-DebugPrint["Check QCD vs SM (MT*10):", RunQCD[sc*scfactor, PDG`asQCD,PDG`MZ,4, PDG`MT]," vs ", gs^2/(4 Pi) /. ppp];
-DebugPrint["Check QCD vs SM (MT/10):", RunQCD[sc/scfactor, PDG`asQCD,PDG`MZ,4, PDG`MT], " vs ", gs^2/(4 Pi) /. mmm];
+DebugPrint["Check QCD vs SM (MT):",    RunQCDnf6[sc, PDG`asQCD,PDG`MZ,4, PDG`MT], " vs ", gs^2/(4 Pi) /. ref];
+DebugPrint["Check QCD vs SM (MT*10):", RunQCDnf6[sc*scfactor, PDG`asQCD,PDG`MZ,4, PDG`MT]," vs ", gs^2/(4 Pi) /. ppp];
+DebugPrint["Check QCD vs SM (MT/10):", RunQCDnf6[sc/scfactor, PDG`asQCD,PDG`MZ,4, PDG`MT], " vs ", gs^2/(4 Pi) /. mmm];
 
 			refe = RunParsFromPoleMassesAndAsWithMb[][gs^2/(4 Pi) /. ref, sc];
 			refeAGF = RunParsFromPoleMassesAndAsAndGf[][gs^2/(4 Pi) /. ref, sc];
@@ -284,9 +284,9 @@ RunParsFromPoleMassesAndAs[mz_:PDG`MZ,mw_:PDG`MW,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`G
 (* NB: one needs to supply running as! *)
 
 (* move important parrameters to the beginning *)
-RunParsFromPoleMassesAndGfalpha[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCD[smu,asMZ,mz,4,mt]},
+RunParsFromPoleMassesAndGfalpha[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
 			RunParsFromPoleMassesAndAsWithMb[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
-RunParsFromPoleMassesAndGfalphaList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCD[smu,asMZ,mz,4,mt]},
+RunParsFromPoleMassesAndGfalphaList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
 			RunParsFromPoleMassesAndAsWithMb[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
 
 RunParsFromPoleMassesAndAsWithMb[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew},
@@ -321,12 +321,12 @@ DebugPrint["DEBUG: 1/aewSol = ", 1/aew /. solaew];
 		];
 
 (*
-RunParsFromPoleMassesAndGf[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCD[smu,PDG`asQCD,PDG`MZ,4,PDG`MT]},
+RunParsFromPoleMassesAndGf[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,PDG`asQCD,PDG`MZ,4,PDG`MT]},
 			RunParsFromPoleMassesAndAsAndGf[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]];
 *)
-RunParsFromPoleMassesAndGf[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCD[smu,asMZ,mz,4,mt]},
+RunParsFromPoleMassesAndGf[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
 			RunParsFromPoleMassesAndAsAndGf[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
-RunParsFromPoleMassesAndGfList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCD[smu,asMZ,mz,4,mt]},
+RunParsFromPoleMassesAndGfList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
 			Last /@ RunParsFromPoleMassesAndAsAndGf[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
 
 RunParsFromPoleMassesAndAsAndGf[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res},
