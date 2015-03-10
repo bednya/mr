@@ -287,17 +287,18 @@ RunParsFromPoleMassesAndAs[mz_:PDG`MZ,mw_:PDG`MW,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`G
 RunParsFromPoleMassesAndGfalpha[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
 			RunParsFromPoleMassesAndAsWithMb[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
 RunParsFromPoleMassesAndGfalphaList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
-			RunParsFromPoleMassesAndAsWithMb[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
+			Last /@ RunParsFromPoleMassesAndAsWithMb[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
 
 RunParsFromPoleMassesAndAsWithMb[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew},
 DebugPrint["DEBUG: mb = ", mb];
+
 		aa1 = (4 Pi) 3/5 * a1[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
 		aa2 = (4 Pi)       a2[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
 		impliciteq = (aew == (Simplify[aa1*aa2/(aa1 + aa2)]));
 		impliciteqcheck = (aew == Normal[Series[Simplify[aa1*aa2/(aa1 + aa2)], {aew,0,2}]]);
 		(* solution for alpha ew at the scale *)
 		solaew = FindRoot[ impliciteq, {aew, 1/127.94}]; 
-DebugPrint["DEBUG: 1/aewSol = ", 1/aew /. solaew];
+Print["DEBUG: 1/aewSol = ", 1/aew /. solaew];
 		(* Couplings *)
 		res = { g1->Sqrt[ (4 Pi)^2 3/5 a1[mb, mw,mz,mh,mt,smu]], 
 		  g2 -> Sqrt[ (4 Pi)^2 a2[mb,mw,mz,mh,mt,smu]],
@@ -307,6 +308,47 @@ DebugPrint["DEBUG: 1/aewSol = ", 1/aew /. solaew];
 		  lam -> (4 Pi)^2 alam[mb,mw,mz,mh,mt,smu], 
 		(* ms(mu) = mh(mu) ? *)
 		    m -> mh * Sqrt[mmHMMH[mb,mw,mz,mh,mt,smu]],
+	       mcheck -> (4 Pi) Sqrt[2 alam[mb,mw,mz,mh,mt,smu]] * vev[mb, mw,mz,mh,mt,smu],
+		    vev -> vev[mb,mw,mz,mh,mt,smu],
+		    scale -> smu};
+		(*		Print[res, ":::",2^(-1/2)*Gf/(4*Pi)^2*mh^2*(1+aEW[mu]*yH[1,0]+aEW[mu]*aQCD[mu]*yH[1,1]+aEW[mu]^2*yH[2,0]) /. mu->smu/. XH[mb,mw,mz,mh,mt,smu,1,2], "::",alam[mb, mw,mz,mh,mt,smu], ":::", XH[mb,mw,mz,mh,mt,smu,2,1]];*)
+	       	res = res /. {aQCD[smu]-> looptag "asmu" asmu/(4 Pi), Gf->gf, aEW[smu]-> looptag "aew" aew/(4 Pi)} /. solaew;
+		(*Print["1/a=", 1/aew /. solaew];
+		Print["as=", asmu,":", res, "->",res /. h->1];*)
+		If[ NumericQ[looptag], Return[ res /. a_String -> 1 (* remove string tags *)], 
+		(* else *) 
+		(* Return[ res /. (a_->b_):>(a->(b/. looptag->0)*corr[Collect[1/(b/.looptag->0)*(Normal[Series[b,{looptag,0,2}]]),looptag,Expand], (b /. lootag->1)])] *)
+		Return[ res /. (a_->b_):>(a->(b/. looptag->0)*corr[Collect[1/(b/.looptag->0)*(Normal[Series[b,{looptag,0,2}]]),looptag,Expand], (b /. lootag->1 /. a_String->1)/(b /. looptag->0)])]
+		  ];
+		];
+
+RunParsFromPoleMassesAndAsWithMb[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew,mmW = mw^2, mmZ=mz^2, dyZ, dyW},
+
+		aa1 = (4 Pi) 3/5 * a1[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
+		aa2 = (4 Pi)       a2[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
+		impliciteq = (aew == (Simplify[aa1*aa2/(aa1 + aa2)]));
+		impliciteqcheck = (aew == Normal[Series[Simplify[aa1*aa2/(aa1 + aa2)], {aew,0,2}]]);
+		(* solution for alpha ew at the scale *)
+		solaew = FindRoot[ impliciteq, {aew, 1/127.94}]; 
+Print["DEBUG: 1/aewSol = ", 1/aew /. solaew];
+
+		dyZ = 1 + looptag*"aew"*aEW[smu]*yZ[1,0]
+			+ looptag^2 ("aew"*"as"*aEW[smu]*aQCD[smu]*yZ[1,1]+ "aew"^2 aEW[smu]^2*yZ[2,0])/.XZ[mb,mw,mz,mh,mt,smu] /. x_String->1 /. aEW[smu]->aew/(4 Pi) /. aQCD[smu]-> asmu/(4 Pi);
+		dyW = 1 + looptag*"aew"*aEW[smu]*yW[1,0]
+			+ looptag^2 ("aew"*"as"*aEW[smu]*aQCD[smu]*yW[1,1]+ "aew"^2 aEW[smu]^2*yW[2,0])/.XW[mb,mw,mz,mh,mt,smu] /. x_String->1 /. aEW[smu]->aew/(4 Pi) /. aQCD[smu]-> asmu/(4 Pi) ;
+
+		Print["--->", 1/aew /. FindRoot[Evaluate[gf] == aew*Pi/Sqrt[2]/mmW/dyW/(1 - mmW/mmZ * dyW/dyZ), {aew,1/126.94}]];
+
+		(* Couplings *)
+		res = { g1->Sqrt[ (4 Pi)^2 3/5 a1[mb, mw,mz,mh,mt,smu]], 
+		  g2 -> Sqrt[ (4 Pi)^2 a2[mb,mw,mz,mh,mt,smu]],
+		  gs -> Sqrt[ (4 Pi) asmu],
+		  yb -> Sqrt[ (4 Pi)^2 ab[mb, mw,mz,mh,mt,smu]],
+		  yt -> Sqrt[ (4 Pi)^2 at[mb, mw,mz,mh,mt,smu]],
+		  lam -> (4 Pi)^2 alam[mb,mw,mz,mh,mt,smu], 
+		(* ms(mu) = mh(mu) ? *)
+		    m -> mh * Sqrt[mmHMMH[mb,mw,mz,mh,mt,smu]],
+	       mcheck -> (4 Pi) Sqrt[2 alam[mb,mw,mz,mh,mt,smu]] * vev[mb, mw,mz,mh,mt,smu],
 		    vev -> vev[mb,mw,mz,mh,mt,smu],
 		    scale -> smu};
 		(*		Print[res, ":::",2^(-1/2)*Gf/(4*Pi)^2*mh^2*(1+aEW[mu]*yH[1,0]+aEW[mu]*aQCD[mu]*yH[1,1]+aEW[mu]^2*yH[2,0]) /. mu->smu/. XH[mb,mw,mz,mh,mt,smu,1,2], "::",alam[mb, mw,mz,mh,mt,smu], ":::", XH[mb,mw,mz,mh,mt,smu,2,1]];*)
@@ -329,9 +371,23 @@ RunParsFromPoleMassesAndGf[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_
 RunParsFromPoleMassesAndGfList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
 			Last /@ RunParsFromPoleMassesAndAsAndGf[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
 
-RunParsFromPoleMassesAndAsAndGf[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res},
+RunParsFromPoleMassesAndAsAndGf[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res, aewtree = Sqrt[2] gf/Pi * mw^2 * (1 - mw^2/mz^2), A10, cw2 = mw^2/mz^2, aEWtree},
 		aew = alphaGF[ mb, mw, mz, mh, mt, smu] /. aQCD[smu] -> asmu/(4 Pi) /. Gf -> gf; 
-DebugPrint["DEBUG: 1/aewGF = ", 1/aew];
+Print["DEBUG: 1/aewtree = ", 1/aewtree];
+Print["DEBUG: 1/aewGF = ", 1/aew];
+(* new routine, explicit *)
+{dZ1, dZ2, dW1, dW2}  =   aEWtree*{ yZ[1,0], 
+			        aQCD[smu]*yZ[1,1] + aEWtree*yZ[2,0],
+				          yW[1,0], 
+			        aQCD[smu]*yW[1,1] + aEWtree*yW[2,0]} /. XW[mb,mw,mz,mh,mt,smu] /. XZ[mb,mw,mz,mh,mt,smu] ;
+Print["DEBUG:", {dZ1, dZ2, dW1, dW2}];
+		A10 = (dW1 * (1 - 2 * cw2) + cw2 * dZ1)/(1 - cw2);
+		aew = aewtree * ( 1 + A10 
+				    + ( (dW2 * (1 - 2 * cw2) + cw2 * ( dZ2 + 2 dW1 dW2 - dW1^2 - dW2^2))/(1 - cw2)
+				    + A10^2 (* reexpansion *)
+				      )
+				) /. aQCD[smu]-> asmu/(4 Pi) /. aEWtree -> aewtree/(4 Pi);
+Print["DEBUG: 1/aewGF = ", 1/aew] ;
 		(* Couplings *)
 		res = { g1->Sqrt[ (4 Pi)^2 3/5 a1[mb, mw,mz,mh,mt,smu]], 
 		  g2 -> Sqrt[ (4 Pi)^2 a2[mb,mw,mz,mh,mt,smu]],
