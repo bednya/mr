@@ -438,17 +438,15 @@ void MZp(long double gp, long double g, long double gs, long double yb, long dou
 }
 
 
-void RunQCD(long double oscale, long double asMZ, long double MZscale, int nL, long double mtth)
+void RunQCDnf6(long double oscale, long double asMZ, long double MZscale, int nL, long double mtth)
 {
 	// nL - number of loops
 	// mtth - top threshold
-	long double iscale = MZscale;
-	long double ialphas = asMZ;
-	AlphaS tmp(iscale,ialphas,nL,5,mtth); // 5 flavor
-	iscale = mtth;
-	ialphas = tmp(mtth);
-	AlphaS asrun(iscale,ialphas,nL,6,mtth); // 6 flavor
-	MLPutReal128(stdlink,asrun(oscale));
+	// run to threshold - MT - 4 loop RGE
+	long double asMT = run(asMZ, MZscale, mtth, 5, nL);
+	// jump to nf = 6
+	asMT = as5nf2as6nf(mtth, mtth, asMT, 5, nL - 1); 
+	MLPutReal128(stdlink,run(asMT, mtth, oscale, 6, nL));
 		
 }	
 
