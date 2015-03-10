@@ -10,7 +10,7 @@ chiSquare[sol]
 
 *)
 
-(* SetPDGValues[$DegrassiEtAlValues] *)
+(* SetPDGValues[$DegrassiEtAlValues]  *)
 
 
 ReportPDGValues[]
@@ -30,12 +30,23 @@ mhderiv = ND[ RunParsFromPoleMassesAndGfList[1][PDG`MT,mh,matchscale]*PDG`dMH, m
 Print["MW"];
 mwderiv = ND[ RunParsFromPoleMassesAndGfList[1][PDG`MT,PDG`MH,PDG`asQCD,mw,matchscale]*PDG`dMW, mw, PDG`MW];
 Print["as"]
-asderiv = ND[ RunParsFromPoleMassesAndGfList[][PDG`MT,PDG`MH,as,matchscale]*PDG`dasQCD, as, PDG`asQCD];
+asderiv = ND[ RunParsFromPoleMassesAndGfList[][PDG`MT,PDG`MH,as,matchscale]*PDG`dasQCD, as, PDG`asQCD, Scale -> 0.1 ]; (* scale prevents complex derivative of yb *)
 
-ress = MapThread[First[#1] -> #2 &, {inipars,iniparsn + df["MT" - PDG`MT,PDG`dMT] * mtderiv + df["MH" - PDG`MH,PDG`dMH] * mhderiv + df["MW" - PDG`MW,PDG`dMW] * mwderiv  + df["as" - PDG`asQCD,PDG`dasQCD] * asderiv}] 
 
+
+uncert10 = EstimateTheorUncertaintyInMatchingDegrassi[matchscale,10]
+unceret2 = EstimateTheorUncertaintyInMatchingDegrassi[matchscale,2]
+
+
+ress = MapThread[First[#1] -> #2 &, {inipars,iniparsn + df["MT" - PDG`MT,PDG`dMT] * mtderiv 
+						      + df["MH" - PDG`MH,PDG`dMH] * mhderiv 
+						      + df["MW" - PDG`MW,PDG`dMW] * mwderiv  
+						      + df["as" - PDG`asQCD,PDG`dasQCD] * asderiv}] 
+(*
 ress >> "pdg2014_runpars_MT"
-
+*)
+(* {ress, uncert10, uncert10} >> "1307.3536v4_runpars_MT_v2" *)
+{ress, uncert10, uncert10} >> "pdg2014_runpars_MT_v3"
 Quit[]
 
 
@@ -59,8 +70,6 @@ PDG`MZ
 *)
 
 
-EstimateTheorUncertaintyInMatchingDegrassi[PDG`MT,10]
-EstimateTheorUncertaintyInMatchingDegrassi[PDG`MT,2]
 
 (* 
 pars /. h->1 /. x_String->1 /. corr[x_,y_]:> y*corr[y-x]
