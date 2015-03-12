@@ -667,13 +667,13 @@ void GFp(long double gp, long double g, long double gs, long double yb, long dou
   long double aEW  = mi.alpha()/4./Pi;
   long double aQCD = pow(gs/4./Pi,2);
 
-  long double dGF = 0;
-  if (L>0) dGF += aEW*drm.dr10();
-  if (L>1) dGF += aEW*aQCD*drm.dr11() 
+  //long double dGF = 0;
+  //if (L>0) dGF += aEW*drm.dr10();
+  //if (L>1) dGF += aEW*aQCD*drm.dr11() 
 	  	  +aEW*aEW*drm.dr20();
 
-  long double GF = (1 + dGF)/sqrt(2.0)/pow(mi.vev(),2);
-  MLPutReal128(stdlink, GF);
+ // long double GF = (1 + dGF)/sqrt(2.0)/pow(mi.vev(),2);
+ // MLPutReal128(stdlink, GF);
 
   MLPutFunction(stdlink,"Times",2);
   MLPutReal128(stdlink,1/sqrt(2.0)/pow(mi.vev(),2));
