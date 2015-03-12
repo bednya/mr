@@ -95,9 +95,10 @@
 :Evaluate:   yb::usage  = "running bottom Yukawa coupling"
 :Evaluate:   lam::usage  = "running higgs self-coupling"
 :Evaluate:   m::usage    = "running higgs mass parameter"
+:Evaluate:   vev::usage    = "running higgs vev parameter"
 :Evaluate:   scale::usage  = "renormalization scale"
 
-:Evaluate:  Protect[g1,g2,gs,yt,yb,lam,m,scale];
+:Evaluate:  Protect[g1,g2,gs,yt,yb,lam,m,vev,scale];
 
 :Evaluate:  Begin["`Private`"]
 
