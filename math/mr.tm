@@ -98,7 +98,7 @@
 :Evaluate:   vev::usage    = "running higgs vev parameter"
 :Evaluate:   scale::usage  = "renormalization scale"
 
-:Evaluate:  Protect[g1,g2,gs,yt,yb,lam,m,vev,scale];
+:Evaluate:  Protect[g1,g2,gs,yt,yb,lam,m,scale];
 
 :Evaluate:  Begin["`Private`"]
 
@@ -194,11 +194,12 @@
 			(* else *) Print[" Not All parameters specified  ", pars, " from ", runpars]]];
 
 
-:Evaluate:  MT[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1] := Block[{vev,lc,aEW,aQCD,mt, pars = {G1,G2,GS,YB,YT,LAM,M,SC} },
+:Evaluate:  MT[G1_?NumericQ,G2_?NumericQ,GS__?NumericQ,YB_?NumericQ,YT_?NumericQ,LAM_?NumericQ,M_?NumericQ,SC_?NumericQ, looptag_:1, OptionsPattern[{ExcludeQCD3loop -> False }] ] := Block[{qcd3loop=1,vev,lc,aEW,aQCD,mt, pars = {G1,G2,GS,YB,YT,LAM,M,SC} },
 			(* loop corrections *)	lc = Join[XMT[ Sequence @@ pars], XMTQCD[ Sequence @@ pars]];
 			{aEW, aQCD} = {G1^2*G2^2/(G1^2 + G2^2), GS^2}/(16 Pi^2);
 			vev = Sqrt[M^2/LAM/2]; mt = YT * vev / Sqrt[2];
-			Return[ mt * (1 + looptag * (aQCD * xMTQCD[0,1] + aEW * xMT[1, 0]) + looptag^2 ( aQCD^2 * xMTQCD[0,2] + aEW^2 * xMT[2,0] + aEW*aQCD * xMT[1,1] ) + looptag^3 * aQCD^3 * xMTQCD[0,3]) /. lc ]]	
+			If[ TrueQ[ OptionValue[ ExcludeQCD3loop ] ], qcd3loop = 0];
+			Return[ mt * (1 + looptag * (aQCD * xMTQCD[0,1] + aEW * xMT[1, 0]) + looptag^2 ( aQCD^2 * xMTQCD[0,2] + aEW^2 * xMT[2,0] + aEW*aQCD * xMT[1,1] ) + looptag^3 * qcd3loop * aQCD^3 * xMTQCD[0,3]) /. lc ]]	
 
 :Evaluate:  MT[runpars_List, looptag_:1]:= Block[{pars = {g1,g2,gs,yb,yt,lam,m,scale} /. runpars},
 			(* check numeric *) If [ And @@ NumericQ /@ pars, 
