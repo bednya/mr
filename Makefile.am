@@ -5,6 +5,10 @@
 ##
 ## Process this file with automake to produce Makefile.in
 ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS} -I m4
+if HAVE_BOOST
+export BOOST_CPPFLAGS
+endif
+
 SUBDIRS =         \
 	tsil-1.21 \
 	mr        \
