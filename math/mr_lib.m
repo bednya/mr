@@ -32,6 +32,8 @@ $SMdata = $PDGdata[$PDGYear];
 
 error[x_][0.]=0;
 error[x_][0.,0.]=0;
+error[x_][0]=0;
+error[x_][0,0]=0;
 
 (*
 error1[0]=0; (* error due to different procedures to extract alpha from Gf - solution of implictit equation, or explicit reexpansion *)
