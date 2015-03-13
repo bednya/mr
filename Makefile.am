@@ -9,13 +9,14 @@ ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS} -I m4
 SUBDIRS =         \
 	tsil-1.21 \
 	mr        \
-	examples  \
 	tests
 
 
 if HAVE_MPREP
 SUBDIRS+=math
 endif
+
+SUBDIRS+=examples  
 
 EXTRA_DIST = tsil-1.21
 
