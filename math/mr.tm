@@ -123,7 +123,7 @@
 
 :Evaluate:  at[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := (2^(3/4)*Sqrt[Gf]/(4*Pi)*mt*(1+aQCD[scale]*xt[0,1] + aEW[scale]*yt[1,0]+aEW[scale]*aQCD[scale]*yt[1,1]+aEW[scale]^2*yt[2,0] + aQCD[scale]^2*xt[0,2] + aQCD[scale]^3*xt[0,3])/.Xt[mb,mW,mZ,mH,mt,scale,nL,nH] /. XtQCD[mb,mW,mZ,mH,mt,scale,nL,nH])^2;
 
-:Evaluate:  ab[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := (2^(3/4)*Sqrt[Gf]/(4*Pi)*mb*(1+aQCD[scale]*xb[0,1]+aEW[scale]*yb[1,0]+aEW[scale]*aQCD[scale]*yb[1,1]+aEW[scale]^2*yb[2,0] + aQCD[scale]^2*xb[0,2] + aQCD[scale]^3*xb[0,3])/.Xb[mb,mW,mZ,mH,mt,scale,nL,nH] /. XbQCD[mb,mW,mZ,mH,mt,scale,nL,nH]);
+:Evaluate:  ab[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := (2^(3/4)*Sqrt[Gf]/(4*Pi)*mb*(1+aQCD[scale]*xb[0,1]+aEW[scale]*yb[1,0]+aEW[scale]*aQCD[scale]*yb[1,1]+aEW[scale]^2*yb[2,0] + aQCD[scale]^2*xb[0,2] + aQCD[scale]^3*xb[0,3])/.Xb[mb,mW,mZ,mH,mt,scale,nL,nH] /. XbQCD[mb,mW,mZ,mH,mt,scale,nL,nH])^2;
 
 :Evaluate:  alam[mb_?NumericQ,mW_?NumericQ,mZ_?NumericQ,mH_?NumericQ,mt_?NumericQ,scale_?NumericQ,nL_Integer:2,nH_Integer:1] := 2^(-1/2)*Gf/(4*Pi)^2*mH^2*(1+aEW[scale]*yH[1,0]+aEW[scale]*aQCD[scale]*yH[1,1]+aEW[scale]^2*yH[2,0])/.XH[mb,mW,mZ,mH,mt,scale,nL,nH];
 
