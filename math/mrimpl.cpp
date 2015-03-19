@@ -449,6 +449,16 @@ void RunQCDnf6(long double oscale, long double asMZ, long double MZscale, int nL
 	MLPutReal128(stdlink,run(asMT, mtth, oscale, 6, nL));
 		
 }	
+void RunQCD(long double oscale, long double as0, long double iscale, int nL, int nF)
+{
+	// nL - number of loops
+	// mtth - top threshold
+	// run to threshold - MT - 4 loop RGE
+	long double aso = run(as0, iscale, oscale, nF, nL);
+	// jump to nf = 6
+	MLPutReal128(stdlink,aso);
+		
+}	
 
 void RunSM(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double mu0, long double iscale, long double oscale) 
 {

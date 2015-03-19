@@ -5,6 +5,7 @@
 :Evaluate:  BeginPackage["mr`"]
 
 :Evaluate:  RunQCDnf6::usage  = "RunQCDnf6[oscale,asMZ, MZscale, L, mtth] evaluate alphas at specified oscale in n=6 QCD given asMZ at MZscale (nf=5) with L-loop RGE with top threshold at mtth"
+:Evaluate:  RunQCD::usage  = "RunQCD[oscale,as0,inscale,L,nf] run as from the inscale to oscale in nf flavour QCD at L-loops given as(inscale) = as0"
 :Evaluate:  RunSM::usage  = "RunSM[gp,g,gs,yt,lam,m,iscale,oscale] return running parameters at specified oscale given the values at specified iscale;
 			     RunSM[pars_,oscale] returns a list {g1 -> ..., g2 -> ..., ..., scale -> oscale} of running parameters given a list pars";
 
@@ -343,6 +344,14 @@
 :Pattern: RunQCDnf6[oscale_?NumericQ,asMZ_?NumericQ,MZscale_?NumericQ,nL_Integer,mtth_?NumericQ] /; 1<=nL<=4
 :Arguments: {N[oscale],N[asMZ],N[MZscale],nL,N[mtth]}
 :ArgumentTypes: {Real128,Real128,Real128,Integer,Real128}
+:ReturnType: Manual
+:End:
+
+:Begin:
+:Function: RunQCD
+:Pattern: RunQCD[oscale_?NumericQ,as0_?NumericQ,inscale_?NumericQ,nL_Integer,nF_Integer] /; 1<=nL<=4
+:Arguments: {N[oscale],N[as0],N[inscale],nL,nF}
+:ArgumentTypes: {Real128,Real128,Real128,Integer,Integer}
 :ReturnType: Manual
 :End:
 
