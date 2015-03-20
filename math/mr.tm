@@ -4,7 +4,7 @@
 
 :Evaluate:  BeginPackage["mr`"]
 
-:Evaluate:  RunQCDnf6::usage  = "RunQCDnf6[oscale,asMZ, MZscale, L, mtth] evaluate alphas at specified oscale in n=6 QCD given asMZ at MZscale (nf=5) with L-loop RGE with top threshold at mtth"
+:Evaluate:  RunQCDnf6::usage  = "RunQCDnf6[oscale,asMZ, MZscale, L, Mtpole, mtth] evaluate alphas at specified oscale in n=6 QCD given asMZ at MZscale (nf=5) with L-loop RGE with top (with Mtpole) threshold evaluated at mtth, if last argument is not specified it is assumed that mtth = Mtpole"
 :Evaluate:  RunQCD::usage  = "RunQCD[oscale,as0,inscale,L,nf] run as from the inscale to oscale in nf flavour QCD at L-loops given as(inscale) = as0"
 :Evaluate:  RunSM::usage  = "RunSM[gp,g,gs,yt,lam,m,iscale,oscale] return running parameters at specified oscale given the values at specified iscale;
 			     RunSM[pars_,oscale] returns a list {g1 -> ..., g2 -> ..., ..., scale -> oscale} of running parameters given a list pars";
@@ -83,7 +83,7 @@
 :Evaluate:  xMTQCD::usage  = "xMTQCD[0,b] represents a coefficient of pure QCD contribution aQCD^b in the relation between the pole mass MT and running parameters"
 :Evaluate:  xdRbar::usage  = "xdRbar[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between GF and running parameters (vev, etc)"
 
-
+:Evaluate:   RunQCDnf6[oscale_?NumericQ,asMZ_?NumericQ,MZscale_?NumericQ,nL_Integer,mtpole_?NumericQ] := RunQCDnf6[oscale, asMZ, MZscale,nL,mtpole,mtpole] /; 1<=nL<=4
 
 :Evaluate:  dr::usage  = "dr[a,b] represents a coefficient of aEW^a * aQCD^b in the relation between the running Higgs vev and the Fermi constant GF"
 
@@ -341,9 +341,9 @@
 
 :Begin:
 :Function: RunQCDnf6
-:Pattern: RunQCDnf6[oscale_?NumericQ,asMZ_?NumericQ,MZscale_?NumericQ,nL_Integer,mtth_?NumericQ] /; 1<=nL<=4
-:Arguments: {N[oscale],N[asMZ],N[MZscale],nL,N[mtth]}
-:ArgumentTypes: {Real128,Real128,Real128,Integer,Real128}
+:Pattern: RunQCDnf6[oscale_?NumericQ,asMZ_?NumericQ,MZscale_?NumericQ,nL_Integer,mtpole_?NumericQ,mtth_?NumericQ] /; 1<=nL<=4
+:Arguments: {N[oscale],N[asMZ],N[MZscale],nL,N[mtpole],N[mtth]}
+:ArgumentTypes: {Real128,Real128,Real128,Integer,Real128,Real128}
 :ReturnType: Manual
 :End:
 

@@ -438,14 +438,14 @@ void MZp(long double gp, long double g, long double gs, long double yb, long dou
 }
 
 
-void RunQCDnf6(long double oscale, long double asMZ, long double MZscale, int nL, long double mtth)
+void RunQCDnf6(long double oscale, long double asMZ, long double MZscale, int nL, long double mtpole, long double mtth)
 {
 	// nL - number of loops
 	// mtth - top threshold
 	// run to threshold - MT - 4 loop RGE
 	long double asMT = run(asMZ, MZscale, mtth, 5, nL);
 	// jump to nf = 6
-	asMT = as5nf2as6nf(mtth, mtth, asMT, 5, nL - 1); 
+	asMT = as5nf2as6nf(mtpole, mtth, asMT, 5, nL - 1); 
 	MLPutReal128(stdlink,run(asMT, mtth, oscale, 6, nL));
 		
 }	
