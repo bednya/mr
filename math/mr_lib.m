@@ -1,3 +1,4 @@
+
 link=Install["mr"];
 
 (* PDG 2014 data *)
@@ -86,13 +87,13 @@ ThreeSigmaRange[x_,s_,n_:2] := Module[{step = 6 s /n}, Table[ x - 3 s + step * (
 
 (* find running parameters given (pseudo)observables, and a renormalization scale *)
 
-sol[sc_][mzp_:PDG`MZ,mwp_:PDG`MW,mtp_:PDG`MT,mhp_:PDG`MH,gfp_:PDG`GF,asp_:PDG`asQCD] := Join[FindRoot[ {
+sol[sc_,qcdth_:PDG`MT][mzp_:PDG`MZ,mwp_:PDG`MW,mtp_:PDG`MT,mhp_:PDG`MH,gfp_:PDG`GF,asp_:PDG`asQCD] := Join[FindRoot[ {
 	   MZ[g1, g2, gs, 0, yt, lam, m, sc] == mzp (* 91.1876 *),
 	   MW[g1, g2, gs, 0, yt, lam, m, sc] == mwp (* 80.385 *),
 	   MT[g1, g2, gs, 0, yt, lam, m, sc] == mtp (* sc *),
 	   MH[g1, g2, gs, 0, yt, lam, m, sc] == mhp (* 125.7 *),
 	   GF[g1, g2, gs, 0, yt, lam, m, sc] == gfp (* 0.000011663787 *),
-	   gs^2/(4*Pi)==RunQCDnf6[sc, asp,PDG`MZ,4, PDG`MT] 
+	   gs^2/(4*Pi)==RunQCDnf6[sc, asp, mzp,4, mzp, qcdth]  (* threshold *)
 	  },{
 		{g1, 0.357561},
 		{g2 , 0.64822},
@@ -102,13 +103,13 @@ sol[sc_][mzp_:PDG`MZ,mwp_:PDG`MW,mtp_:PDG`MT,mhp_:PDG`MH,gfp_:PDG`GF,asp_:PDG`as
 		{m,132.03}
 	  }],{yb -> 0,scale -> sc}];
 
-sol2loopMT[sc_][mzp_:PDG`MZ,mwp_:PDG`MW,mtp_:PDG`MT,mhp_:PDG`MH,gfp_:PDG`GF,asp_:PDG`asQCD] := Join[FindRoot[ {
+sol2loopMT[sc_, qcdth_:PDG`MT][mzp_:PDG`MZ,mwp_:PDG`MW,mtp_:PDG`MT,mhp_:PDG`MH,gfp_:PDG`GF,asp_:PDG`asQCD] := Join[FindRoot[ {
 	   MZ[g1, g2, gs, 0, yt, lam, m, sc] == mzp (* 91.1876 *),
 	   MW[g1, g2, gs, 0, yt, lam, m, sc] == mwp (* 80.385 *),
 	   MT[g1, g2, gs, 0, yt, lam, m, sc, 1, ExcludeQCD3loop -> True] == mtp (* sc *),
 	   MH[g1, g2, gs, 0, yt, lam, m, sc] == mhp (* 125.7 *),
 	   GF[g1, g2, gs, 0, yt, lam, m, sc] == gfp (* 0.000011663787 *),
-	   gs^2/(4*Pi)==RunQCDnf6[sc, asp,PDG`MZ,4, PDG`MT] 
+	   gs^2/(4*Pi)==RunQCDnf6[sc, asp,mzp, 4, mtp, qcdth] 
 	  },{
 		{g1, 0.357561},
 		{g2 , 0.64822},
@@ -142,6 +143,76 @@ EstimateTheorUncertaintyInMatchingDegrassi[sc_?NumberQ, scfactor_Integer:10, Opt
 	  		mmm,
 			mmme,
 			pars = {g1,g2,gs,yb,yt,lam,m,scale},
+			DoImplicit = TrueQ[ OptionValue[ "UseImplicitExtraction"]]
+	 		 },
+
+If[ DoImplicit,
+	  		ref = sol[sc][]; 
+DebugPrint["ref=", ref];
+Print["IMPLICIT!!!"];
+ ];
+
+Print["SCALE FACTOR: ", scfactor];
+
+			refe = RunParsFromGfAndPoleMasses[sc,"AlphaFromGfImplicit"->True];
+			refeAGF = RunParsFromGfAndPoleMasses[sc,"AlphaFromGfImplicit"->False];
+
+			pppe = RunParsFromGfAndPoleMasses[sc*scfactor,"AlphaFromGfImplicit"->True];
+			pppeR = RunSM[ pppe, sc]; 
+
+			pppeAGF = RunParsFromGfAndPoleMasses[sc*scfactor,"AlphaFromGfImplicit"->False];
+			pppeAGFR = RunSM[ pppeAGF, sc]; 
+
+			mmme = RunParsFromGfAndPoleMasses[sc/scfactor,"AlphaFromGfImplicit"->True];
+			mmmeR = RunSM[ mmme, sc]; 
+
+			mmmeAGF = RunParsFromGfAndPoleMasses[sc/scfactor,"AlphaFromGfImplicit"->False];
+			mmmeAGFR = RunSM[ mmmeAGF, sc]; 
+
+DebugPrint = Print;
+DebugPrint["refe=", refe];
+DebugPrint["refeAGF=", refeAGF];
+
+DebugPrint["pppeR=", pppeR];
+DebugPrint["pppeAGFR=", pppeAGFR];
+DebugPrint["mmmeR=", mmmeR];
+DebugPrint["mmmeAGFR=", mmmeAGFR];
+
+DebugPrint["pppe=", pppe];
+DebugPrint["pppeAGF=", pppeAGF];
+
+DebugPrint["mmme=", mmme];
+DebugPrint["mmmeAGF=", mmmeAGF];
+Clear[DebugPrint];
+			
+
+			(*MapThread[ #1 /. Rule[a_,b_]:> Rule[a, {b,1-#2/b,1-#3/b}] &,{ref,ppp,mmm}]*)	
+If[ DoImplicit,
+	Return[Map[ (# -> (* leave only errors  (# /. refe)  *)
+				       + error[1][ (# /. refe) - (# /. refeAGF)] 
+				       + error[2][(# /. pppeR) - (# /. refe), (# /. mmmeR) - (# /. refe)] 
+				       + error[3][(# /. pppeAGFR) - (# /. refeAGF), (# /. mmmeAGFR) - (# /. refeAGF)]
+				       + error[10][ (# /. refe) - (# /. ref)] 
+				)&, pars]],
+(* else *)
+	Return[Map[ (# ->  (* leave only errors *) 0 * (# /. refe) 
+				       + error[1][ (# /. refe) - (# /. refeAGF)]  
+				       + error[2][(# /. pppeR) - (# /. refe), (# /. mmmeR) - (# /. refe)] 
+				       + error[3][(# /. pppeAGFR) - (# /. refeAGF), (# /. mmmeAGFR) - (# /. refeAGF)]
+				)&, pars]];
+			] 
+
+	];
+
+(*
+EstimateTheorUncertaintyInMatchingDegrassi[sc_?NumberQ, scfactor_Integer:10, OptionsPattern[]] := Module[ {
+	  		ref, 
+			refe,
+	  		ppp,
+			pppe,
+	  		mmm,
+			mmme,
+			pars = {g1,g2,gs,yb,yt,lam,m,scale},
 			asref = RunQCDnf6[sc, PDG`asQCD,PDG`MZ,4, PDG`MT],
 			asppp = RunQCDnf6[sc*scfactor, PDG`asQCD,PDG`MZ,4, PDG`MT],
 			asmmm = RunQCDnf6[sc/scfactor, PDG`asQCD,PDG`MZ,4, PDG`MT],
@@ -154,7 +225,11 @@ DebugPrint["ref=", ref];
 Print["IMPLICIT!!!"];
  ];
 
-
+			(*	
+			Print["ASREF:", asref]; asref = gs^2/(4 Pi) /. sol[sc][];	Print["ASREF:", asref]; 
+			Print["ASPPP:", asppp]; asref = gs^2/(4 Pi) /. sol[sc*scfactor][];	Print["ASPPP:", asref];	
+			Print["ASMMM:", asmmm]; asref = gs^2/(4 Pi) /. sol[sc/scfactor][];	Print["ASMMM:", asref];		
+			*)
 
 			refe = RunParsFromPoleMassesAndAsWithMb[][asref, sc];
 			refeAGF = RunParsFromPoleMassesAndAsAndGf[][asref, sc];
@@ -203,6 +278,8 @@ If[ DoImplicit,
 			] 
 
 	];
+
+*)
 (*
 EstimateTheorUncertainty[ gp_, g_, gs_, yt_, lam_, mu0_,scale_, loop_:2, scalefactor_:2] := Module[ { 
 			(*
@@ -320,28 +397,27 @@ RunParsFromGfAndPoleMasses[mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:
 (*Print["mb = ", mb];*)
 (*Print["mz = ", mz];*)
 					If[ TrueQ[ OptionValue["AlphaFromGfImplicit"] ],
-						If [ TrueQ [ OptionValue [ "ReturnList"] ], Return[ RunParsFromPoleMassesAndGfalphaList[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu] ],
-						(* else *)				      Return[ RunParsFromPoleMassesAndGfalpha[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu]]],
+						If [ TrueQ [ OptionValue [ "ReturnList"] ], Return[ RunParsImplicitAlphaList[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu] ],
+						(* else *)				      Return[ RunParsImplicitAlpha[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu]]],
 					(* else *)
-						If [ TrueQ [ OptionValue [ "ReturnList"] ], Return[ RunParsFromPoleMassesAndGfList[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu]],
-						(* else *)				      Return[ RunParsFromPoleMassesAndGf[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu]]]
+						If [ TrueQ [ OptionValue [ "ReturnList"] ], Return[ RunParsExplicitAlphaList[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu]],
+						(* else *)				      Return[ RunParsExplicitAlpha[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu]]]
 					  ];
 ];
 				 
 
 
-RunParsFromPoleMassesAndGfalpha[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
-			RunParsFromPoleMassesAndAsWithMb[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
-RunParsFromPoleMassesAndGfalphaList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
-			Last /@ RunParsFromPoleMassesAndAsWithMb[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
+RunParsImplicitAlpha[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
+			RunParsImplAlpha[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
+RunParsImplicitAlphaList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
+			Last /@ RunParsImplAlpha[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
 
 
 (* 
 	alpha_ew is found via numerical solution of implicit equation relating Gf and running alpha_ew (given alpha_s)
 *)
 
-RunParsFromPoleMassesAndAsWithMb[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew,mmW = mw^2, mmZ=mz^2, dyZ, dyW},
-
+RunParsImplAlpha[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew,mmW = mw^2, mmZ=mz^2, dyZ, dyW},
 (* old procedure - left for debug *)
 		aa1 = (4 Pi) 3/5 * a1[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
 		aa2 = (4 Pi)       a2[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
@@ -387,18 +463,18 @@ Print["DEBUG (new) : 1/aewSol = ", 1/aew /. solaew];
 	running parameters are extracted from observables, alpha_ew is found from Gf via explicit expression
 *)
 
-RunParsFromPoleMassesAndGf[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
-			RunParsFromPoleMassesAndAsAndGf[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
-RunParsFromPoleMassesAndGfList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
-			Last /@ RunParsFromPoleMassesAndAsAndGf[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
+RunParsExplicitAlpha[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
+			RunParsExplAlpha[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
+RunParsExplicitAlphaList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = RunQCDnf6[smu,asMZ,mz,4,mt]},
+			Last /@ RunParsExplAlpha[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
 
-RunParsFromPoleMassesAndAsAndGf[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res, aewtree = Sqrt[2] gf/Pi * mw^2 * (1 - mw^2/mz^2), A10, cw2 = mw^2/mz^2, aEWtree},
+RunParsExplAlpha[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res, aewtree = Sqrt[2] gf/Pi * mw^2 * (1 - mw^2/mz^2), A10, cw2 = mw^2/mz^2, aEWtree},
 (* old procedure, buggy? *)
 		aew = alphaGF[ mb, mw, mz, mh, mt, smu] /. aQCD[smu] -> asmu/(4 Pi) /. Gf -> gf; 
 
 Print["DEBUG: 1/aewtree = ", 1/aewtree];
 Print["DEBUG: 1/aewGF = ", 1/aew];
-(*
+
 (* new routine, explicit *)
 {dZ1, dZ2, dW1, dW2}  =   aEWtree*{ yZ[1,0], 
 			        aQCD[smu]*yZ[1,1] + aEWtree*yZ[2,0],
@@ -412,7 +488,7 @@ DebugPrint["DEBUG:", {dZ1, dZ2, dW1, dW2}];
 				      )
 				) /. aQCD[smu]-> asmu/(4 Pi) /. aEWtree -> aewtree/(4 Pi);
 Print["DEBUG: 1/aewGF = ", 1/aew] ;
-*)
+
 		(* Couplings *)
 		res = { g1->Sqrt[ (4 Pi)^2 3/5 a1[mb, mw,mz,mh,mt,smu]], 
 		  g2 -> Sqrt[ (4 Pi)^2 a2[mb,mw,mz,mh,mt,smu]],
