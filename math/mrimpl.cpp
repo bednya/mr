@@ -11,6 +11,10 @@
 #include "betaSM.hpp"
 #include "betaQCD.hpp"
 
+typedef CouplingsSM<3,3,3,3,3,3,3> SM_3;
+typedef CouplingsSM<2,2,2,2,2,2,2> SM_2;
+typedef CouplingsSM<1,1,1,1,1,1,1> SM_1;
+
 const WW<MS> & get_WWbar(const MSinput& mi, long double mu2)
 {
   static std::map< std::pair<MSinput, long double>, WW<MS> > directory;
@@ -484,6 +488,90 @@ void RunSM(long double gp, long double g, long double gs, long double yb, long d
       MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[3])); //yt
       MLPutReal128(stdlink, pow(4.*Pi,2)*runCoupling[6]); //lam
       MLPutReal128(stdlink, runCoupling[7]); //m ??
+      MLPutReal128(stdlink, oscale); // out scale
+		
+}
+
+void RunSMcouplings(long double gp, long double g, long double gs, long double yb, long double yt, long double lam, long double iscale, long double oscale, int loop) 
+{
+
+      state_type runCoupling;
+
+      switch(loop)
+      {
+	      case 1:
+		{
+		      SM_1 runSM1(
+                		5./3.*pow(gp/4./Pi,2),
+                		pow(g/4./Pi,2),
+                		pow(gs/4./Pi,2),
+                		pow(yt/4./Pi,2),
+                		pow(yb/4./Pi,2), // yb?
+                		0, // ytau?
+                		lam/pow(4.*Pi,2),             // Lambda
+                		pow(iscale,2),
+                		3 // NG
+                		);
+		      runCoupling = runSM1(pow(oscale,2));
+		}
+		      break;
+	      case 2:
+		{
+		      SM_2 runSM2(
+                		5./3.*pow(gp/4./Pi,2),
+                		pow(g/4./Pi,2),
+                		pow(gs/4./Pi,2),
+                		pow(yt/4./Pi,2),
+                		pow(yb/4./Pi,2), // yb?
+                		0, // ytau?
+                		lam/pow(4.*Pi,2),             // Lambda
+                		pow(iscale,2),
+                		3 // NG
+                		);
+		      runCoupling = runSM2(pow(oscale,2));
+		 }
+		      break;
+	      case 3:
+		 {
+		      SM_3 runSM3(
+                		5./3.*pow(gp/4./Pi,2),
+                		pow(g/4./Pi,2),
+                		pow(gs/4./Pi,2),
+                		pow(yt/4./Pi,2),
+                		pow(yb/4./Pi,2), // yb?
+                		0, // ytau?
+                		lam/pow(4.*Pi,2),             // Lambda
+                		pow(iscale,2),
+                		3 // NG
+                		);
+		      runCoupling = runSM3(pow(oscale,2));
+		 }
+		      break;
+	      default:
+		 {
+		      SM_3 runSM(
+                		5./3.*pow(gp/4./Pi,2),
+                		pow(g/4./Pi,2),
+                		pow(gs/4./Pi,2),
+                		pow(yt/4./Pi,2),
+                		pow(yb/4./Pi,2), // yb?
+                		0, // ytau?
+                		lam/pow(4.*Pi,2),             // Lambda
+                		pow(iscale,2),
+                		3 // NG
+                		);
+		      runCoupling = runSM(pow(oscale,2));
+		 }
+	
+	}	
+
+      MLPutFunction(stdlink, "List", 7);
+      MLPutReal128(stdlink, 4.*Pi*sqrt(3/5.*runCoupling[0])); //gp
+      MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[1])); //g 
+      MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[2])); //gs
+      MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[4])); //yb
+      MLPutReal128(stdlink, 4.*Pi*sqrt(runCoupling[3])); //yt
+      MLPutReal128(stdlink, pow(4.*Pi,2)*runCoupling[6]); //lam
       MLPutReal128(stdlink, oscale); // out scale
 		
 }

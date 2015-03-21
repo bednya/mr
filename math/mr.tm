@@ -8,6 +8,8 @@
 :Evaluate:  RunQCD::usage  = "RunQCD[oscale,as0,inscale,L,nf] run as from the inscale to oscale in nf flavour QCD at L-loops given as(inscale) = as0"
 :Evaluate:  RunSM::usage  = "RunSM[gp,g,gs,yt,lam,m,iscale,oscale] return running parameters at specified oscale given the values at specified iscale;
 			     RunSM[pars_,oscale] returns a list {g1 -> ..., g2 -> ..., ..., scale -> oscale} of running parameters given a list pars";
+:Evaluate:  RunSMcouplings::usage  = "RunSMcouplings[gp,g,gs,yt,lam,iscale,oscale,L] return running dimensionless couplings at specified oscale given the values at specified iscale;
+			     RunSMcouplings[pars_,oscale,L] returns a list {g1 -> ..., g2 -> ..., ..., scale -> oscale} of running parameters given as a  list pars, L-loop RGES are used";
 
 
 :Evaluate:  MW::usage  = "MW[gp,g,gs,yb,yt,lam,m,scale] returns pole W-boson mass MW given  MSbar parameters at specified scale at 2-loop level"
@@ -243,7 +245,13 @@
 			res = RunSM[ Sequence @@ pars, oscale];
 			res = MapThread[ #1 -> #2 & , {{g1,g2,gs,yb,yt,lam,m,scale},res}];
 			Return[ res ],
-			(* else *) Print[" Not All parameters specified " , pars, " from ", runpars ]]];
+			(* else *) Print["RunSM: Not All parameters specified " , pars, " from ", runpars ]]];
+:Evaluate: RunSMcouplings[runpars_List, oscale_?NumericQ, L_Integer] :=  Block[{pars = {g1,g2,gs,yb,yt,lam,scale} /. runpars, res}, 
+			(* check numeric *) If [ And @@ NumericQ /@ pars, 
+			res = RunSMcouplings[ Sequence @@ pars, oscale, L];
+			res = MapThread[ #1 -> #2 & , {{g1,g2,gs,yb,yt,lam,scale},res}];
+			Return[ res ],
+			(* else *) Print["RunSMcouplings: Not All parameters specified " , pars, " from ", runpars ]]];
 		
 // C++ part
 :Begin:
@@ -360,6 +368,14 @@
 :Pattern: RunSM[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,m_?NumericQ,iscale_?NumericQ,oscale_?NumericQ]
 :Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[m],N[iscale],N[oscale]}
 :ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128}
+:ReturnType: Manual
+:End:
+
+:Begin:
+:Function: RunSMcouplings
+:Pattern: RunSMcouplings[gp_?NumericQ,g_?NumericQ,gs_?NumericQ,yb_?NumericQ,yt_?NumericQ,lam_?NumericQ,iscale_?NumericQ,oscale_?NumericQ, L_Integer] /; 1<=L<=3
+:Arguments: {N[gp],N[g],N[gs],N[yb],N[yt],N[lam],N[iscale],N[oscale],L}
+:ArgumentTypes: {Real128,Real128,Real128,Real128,Real128,Real128,Real128,Real128, Integer}
 :ReturnType: Manual
 :End:
 
