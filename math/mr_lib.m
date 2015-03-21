@@ -142,6 +142,9 @@ EstimateTheorUncertaintyInMatchingDegrassi[sc_?NumberQ, scfactor_Integer:10, Opt
 			pppe,
 	  		mmm,
 			mmme,
+			asLmatching = RunQCDnf6[sc,PDG`asQCD,PDG`MZ,4,PDG`MT,PDG`MT/scfactor], (* alpha_s from nf=5 QCD to nf=6 QCD matching at the scale Mt/2 *)
+			asCmatching = RunQCDnf6[sc,PDG`asQCD,PDG`MZ,4,PDG`MT,PDG`MT], (* alpha_s from nf=5 QCD to nf=6 QCD matching at the scale Mt/2 *)
+			asHmatching = RunQCDnf6[sc,PDG`asQCD,PDG`MZ,4,PDG`MT,scfactor*PDG`MT], (* alpha_s from nf=5 QCD to nf=6 QCD matching at the scale 2*Mt *)
 			pars = {g1,g2,gs,yb,yt,lam,m,scale},
 			DoImplicit = TrueQ[ OptionValue[ "UseImplicitExtraction"]]
 	 		 },
@@ -153,6 +156,11 @@ Print["IMPLICIT!!!"];
  ];
 
 Print["SCALE FACTOR: ", scfactor];
+			(*Print["AS MATCING UNCERTAINTY at ", sc," GeV:", asCmatching, 100*(1 - asLmatching/asCmatching), "|", 100*(1-asHmatching/asCmatching)]; *)
+
+		        refAsH = RunParsImplAlpha[][asHmatching,sc];	
+		        refAsL = RunParsImplAlpha[][asLmatching,sc];	
+
 
 			refe = RunParsFromGfAndPoleMasses[sc,"AlphaFromGfImplicit"->True];
 			refeAGF = RunParsFromGfAndPoleMasses[sc,"AlphaFromGfImplicit"->False];
@@ -169,7 +177,7 @@ Print["SCALE FACTOR: ", scfactor];
 			mmmeAGF = RunParsFromGfAndPoleMasses[sc/scfactor,"AlphaFromGfImplicit"->False];
 			mmmeAGFR = RunSM[ mmmeAGF, sc]; 
 
-DebugPrint = Print;
+(*DebugPrint = Print;*)
 DebugPrint["refe=", refe];
 DebugPrint["refeAGF=", refeAGF];
 
@@ -192,12 +200,14 @@ If[ DoImplicit,
 				       + error[1][ (# /. refe) - (# /. refeAGF)] 
 				       + error[2][(# /. pppeR) - (# /. refe), (# /. mmmeR) - (# /. refe)] 
 				       + error[3][(# /. pppeAGFR) - (# /. refeAGF), (# /. mmmeAGFR) - (# /. refeAGF)]
+				       + error[5][ (# /. refAsH) - (# /. refe), (# /. refAsL) - (# /. refe)] 
 				       + error[10][ (# /. refe) - (# /. ref)] 
 				)&, pars]],
 (* else *)
 	Return[Map[ (# ->  (* leave only errors *) 0 * (# /. refe) 
 				       + error[1][ (# /. refe) - (# /. refeAGF)]  
 				       + error[2][(# /. pppeR) - (# /. refe), (# /. mmmeR) - (# /. refe)] 
+				       + error[5][ (# /. refAsH) - (# /. refe), (# /. refAsL) - (# /. refe)] 
 				       + error[3][(# /. pppeAGFR) - (# /. refeAGF), (# /. mmmeAGFR) - (# /. refeAGF)]
 				)&, pars]];
 			] 
@@ -417,7 +427,7 @@ RunParsImplicitAlphaList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:P
 	alpha_ew is found via numerical solution of implicit equation relating Gf and running alpha_ew (given alpha_s)
 *)
 
-RunParsImplAlpha[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew,mmW = mw^2, mmZ=mz^2, dyZ, dyW},
+RunParsImplAlpha[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_?NumericQ, smu_?NumericQ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew,mmW = mw^2, mmZ=mz^2, dyZ, dyW},
 (* old procedure - left for debug *)
 		aa1 = (4 Pi) 3/5 * a1[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
 		aa2 = (4 Pi)       a2[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
@@ -518,4 +528,5 @@ SetPDGValues[]
 
 alpha[gp_,g_] := g^2 gp^2/(g^2 + gp^2)/(4 Pi)
 alpha[runpars_List] := (g1^2 g2^2/(g1^2 + g2^2)/(4 Pi)) /. runpars
+
 
