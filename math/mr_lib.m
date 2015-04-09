@@ -440,34 +440,34 @@ ScaleDependence[O_][runpars_] := O[ Sequence @@ (RunSM[ Sequence @@ Evaluate[{g1
 (* move important parrameters to the beginning *)
 
 Options[ RunParsFromGfAndPoleMasses ] = {
-						"LoopTag" ->1,
+						"LoopOrder" ->3,
 						"ReturnList" -> False,
 						"AlphaFromGfImplicit" -> True 
 					};
 
 
 RunParsFromGfAndPoleMasses[mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_?NumericQ, OptionsPattern[]]  := Module[ { 
-					looptag = OptionValue["LoopTag"]},
+					loop = OptionValue["LoopOrder"]},
 (*Print["mt = ", mt];*)
 (*Print["mh = ", mh];*)
 (*Print["mw = ", mw];*)
 (*Print["mb = ", mb];*)
 (*Print["mz = ", mz];*)
 					If[ TrueQ[ OptionValue["AlphaFromGfImplicit"] ],
-						If [ TrueQ [ OptionValue [ "ReturnList"] ], Return[ RunParsImplicitAlphaList[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu] ],
-						(* else *)				      Return[ RunParsImplicitAlpha[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu]]],
+						If [ TrueQ [ OptionValue [ "ReturnList"] ], Return[ RunParsImplicitAlphaList[loop][ mt, mh, asMZ, mw, mb, mz, gf, smu] ],
+						(* else *)				      Return[ RunParsImplicitAlpha[loop][ mt, mh, asMZ, mw, mb, mz, gf, smu]]],
 					(* else *)
-						If [ TrueQ [ OptionValue [ "ReturnList"] ], Return[ RunParsExplicitAlphaList[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu]],
-						(* else *)				      Return[ RunParsExplicitAlpha[looptag][ mt, mh, asMZ, mw, mb, mz, gf, smu]]]
+						If [ TrueQ [ OptionValue [ "ReturnList"] ], Return[ RunParsExplicitAlphaList[loop][ mt, mh, asMZ, mw, mb, mz, gf, smu]],
+						(* else *)				      Return[ RunParsExplicitAlpha[loop][ mt, mh, asMZ, mw, mb, mz, gf, smu]]]
 					  ];
 ];
 				 
 
 
-RunParsImplicitAlpha[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = GetRunningStrongCouplingInSM[smu,asMZ,mz,4,mt,{mh,mw}]},
-			RunParsImplAlpha[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
-RunParsImplicitAlphaList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = GetRunningStrongCouplingInSM[smu,asMZ,mz,4,mt,{mh,mw}]},
-			Last /@ RunParsImplAlpha[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
+RunParsImplicitAlpha[loop_:3][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = GetRunningStrongCouplingInSM[smu,asMZ,mz,4,mt,{mh,mw}]},
+			RunParsImplAlpha[loop][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
+RunParsImplicitAlphaList[loop_:3][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = GetRunningStrongCouplingInSM[smu,asMZ,mz,4,mt,{mh,mw}]},
+			Last /@ RunParsImplAlpha[loop][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
 
 
 (* 
@@ -476,7 +476,7 @@ RunParsImplicitAlphaList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:P
 
 
 
-RunParsImplAlpha[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_?NumericQ, smu_?NumericQ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew,mmW = mw^2, mmZ=mz^2, dyZ, dyW},
+RunParsImplAlpha[loop_:3][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_?NumericQ, smu_?NumericQ] := Module[{ltg,aew,seq,aa1,aa2, impliciteq,res,solaew,mmW = mw^2, mmZ=mz^2, dyZ, dyW},
 (* old procedure - left for debug *)
 		aa1 = (4 Pi) 3/5 * a1[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
 		aa2 = (4 Pi)       a2[mb,mw,mz,mh,mt,smu] /.aQCD[smu]->asmu/(4 Pi) /. Gf->gf /. aEW[smu]->aew/(4 Pi) ;
@@ -486,10 +486,10 @@ RunParsImplAlpha[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG
 		solaew = FindRoot[ impliciteq, {aew, 1/127.94}]; 
 Print["DEBUG (old) : 1/aewSol = ", 1/aew /. solaew];
 (* new procedure *)
-		dyZ = 1 + looptag*"aew"*aEW[smu]*yZ[1,0]
-			+ looptag^2 ("aew"*"as"*aEW[smu]*aQCD[smu]*yZ[1,1]+ "aew"^2 aEW[smu]^2*yZ[2,0])/.XZ[mb,mw,mz,mh,mt,smu] /. x_String->1 /. aEW[smu]->aew/(4 Pi) /. aQCD[smu]-> asmu/(4 Pi);
-		dyW = 1 + looptag*"aew"*aEW[smu]*yW[1,0]
-			+ looptag^2 ("aew"*"as"*aEW[smu]*aQCD[smu]*yW[1,1]+ "aew"^2 aEW[smu]^2*yW[2,0])/.XW[mb,mw,mz,mh,mt,smu] /. x_String->1 /. aEW[smu]->aew/(4 Pi) /. aQCD[smu]-> asmu/(4 Pi) ;
+		dyZ = 1 + "aew"*aEW[smu]*yZ[1,0]
+			+ ("aew"*"as"*aEW[smu]*aQCD[smu]*yZ[1,1]+ "aew"^2 aEW[smu]^2*yZ[2,0])/.XZ[mb,mw,mz,mh,mt,smu] /. x_String->1 /. aEW[smu]->aew/(4 Pi) /. aQCD[smu]-> asmu/(4 Pi);
+		dyW = 1 + "aew"*aEW[smu]*yW[1,0]
+			+ ("aew"*"as"*aEW[smu]*aQCD[smu]*yW[1,1]+ "aew"^2 aEW[smu]^2*yW[2,0])/.XW[mb,mw,mz,mh,mt,smu] /. x_String->1 /. aEW[smu]->aew/(4 Pi) /. aQCD[smu]-> asmu/(4 Pi) ;
 
 		solaew = FindRoot[Evaluate[gf] == aew*Pi/Sqrt[2]/mmW/dyW/(1 - mmW/mmZ * dyW/dyZ), {aew,1/126.94}];
 Print["DEBUG (new) : 1/aewSol = ", 1/aew /. solaew];
@@ -507,15 +507,9 @@ Print["DEBUG (new) : 1/aewSol = ", 1/aew /. solaew];
 		    vev -> vev[mb,mw,mz,mh,mt,smu],
 		    scale -> smu};
 		(*		Print[res, ":::",2^(-1/2)*Gf/(4*Pi)^2*mh^2*(1+aEW[mu]*yH[1,0]+aEW[mu]*aQCD[mu]*yH[1,1]+aEW[mu]^2*yH[2,0]) /. mu->smu/. XH[mb,mw,mz,mh,mt,smu,1,2], "::",alam[mb, mw,mz,mh,mt,smu], ":::", XH[mb,mw,mz,mh,mt,smu,2,1]];*)
-	       	res = res /. {aQCD[smu]-> looptag "asmu" asmu/(4 Pi), Gf->gf, aEW[smu]-> looptag "aew" aew/(4 Pi)} /. solaew;
-		(*Print["--->", res];*)
-		(*Print["1/a=", 1/aew /. solaew];
-		DebugPrint["as=", asmu,":", res, "->",res /. h->1];*)
-		If[ NumericQ[looptag], Return[ res /. a_String -> 1 (* remove string tags *)], 
-		(* else *) 
-		(* Return[ res /. (a_->b_):>(a->(b/. looptag->0)*corr[Collect[1/(b/.looptag->0)*(Normal[Series[b,{looptag,0,2}]]),looptag,Expand], (b /. lootag->1)])] *)
-		Return[ res /. (a_->b_):>(a->(b/. looptag->0)*corr[Collect[1/(b/.looptag->0)*(Normal[Series[b,{looptag,0,2}]]),looptag,Expand], (b /. lootag->1 /. a_String->1)/(b /. looptag->0)])]
-		  ];
+	       	res = res /. {aQCD[smu]-> ltg "asmu" asmu/(4 Pi), Gf->gf, aEW[smu]-> ltg "aew" aew/(4 Pi)} /. solaew /. (ltg^x_/; x>loop):>0 /. ltg->1;
+		Print["--->", res];
+		Return[ res /. a_String -> 1];
 		];
 
 
@@ -523,12 +517,12 @@ Print["DEBUG (new) : 1/aewSol = ", 1/aew /. solaew];
 	running parameters are extracted from observables, alpha_ew is found from Gf via explicit expression
 *)
 
-RunParsExplicitAlpha[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = GetRunningStrongCouplingInSM[smu,asMZ,mz,4,mt,mt,{mh,mw}]},
-			RunParsExplAlpha[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
-RunParsExplicitAlphaList[looptag_:1][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = GetRunningStrongCouplingInSM[smu,asMZ,mz,4,mt,mt,{mh,mw}]},
-			Last /@ RunParsExplAlpha[looptag][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
+RunParsExplicitAlpha[loop_:3][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = GetRunningStrongCouplingInSM[smu,asMZ,mz,4,mt,mt,{mh,mw}]},
+			RunParsExplAlpha[loop][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
+RunParsExplicitAlphaList[loop_:3][mt_:PDG`MT,mh_:PDG`MH,asMZ_:PDG`asQCD,mw_:PDG`MW,mb_:PDG`MB,mz_:PDG`MZ,gf_:PDG`GF, smu_ ] := Module[{asmu = GetRunningStrongCouplingInSM[smu,asMZ,mz,4,mt,mt,{mh,mw}]},
+			Last /@ RunParsExplAlpha[loop][mb,mw,mz,mh,mt,gf,asmu,smu]] /; And @@ NumericQ /@ {mt,mh,asMZ,mw,mb,mz,gf,smu};
 
-RunParsExplAlpha[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{aew,seq,aa1,aa2, impliciteq,res, aewtree = Sqrt[2] gf/Pi * mw^2 * (1 - mw^2/mz^2), A10, cw2 = mw^2/mz^2, aEWtree},
+RunParsExplAlpha[loop_:3][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, asmu_, smu_ ] := Module[{ltg,aew,seq,aa1,aa2, impliciteq,res, aewtree = Sqrt[2] gf/Pi * mw^2 * (1 - mw^2/mz^2), A10, cw2 = mw^2/mz^2, aEWtree},
 (* old procedure, buggy? *)
 		aew = alphaGF[ mb, mw, mz, mh, mt, smu] /. aQCD[smu] -> asmu/(4 Pi) /. Gf -> gf; 
 
@@ -562,21 +556,23 @@ Print["DEBUG: 1/aewGF = ", 1/aew] ;
 		    vev -> vev[mb,mw,mz,mh,mt,smu],
 		    scale -> smu};
 		(*		Print[res, ":::",2^(-1/2)*Gf/(4*Pi)^2*mh^2*(1+aEW[mu]*yH[1,0]+aEW[mu]*aQCD[mu]*yH[1,1]+aEW[mu]^2*yH[2,0]) /. mu->smu/. XH[mb,mw,mz,mh,mt,smu,1,2], "::",alam[mb, mw,mz,mh,mt,smu], ":::", XH[mb,mw,mz,mh,mt,smu,2,1]];*)
-	       	res = res /. {aQCD[smu]-> looptag "asmu" asmu/(4 Pi), Gf->gf, aEW[smu]-> looptag "aew" aew/(4 Pi)};
-		(*Print["1/a=", 1/aew /. solaew];
-		DebugPrint["as=", asmu,":", res, "->",res /. h->1];*)
+	       	res = res /. {aQCD[smu]-> ltg "asmu" asmu/(4 Pi), Gf->gf, aEW[smu]-> ltg "aew" aew/(4 Pi)} /. (ltg^x_/; x>loop):>0 /. ltg->1;
+		Print["--->", res];
+		Return[ res /. a_String -> 1];
+(*
 		If[ NumericQ[looptag], Return[ res /. xx_String -> 1 (* remove string tags *)], 
 		(* else *) 
 		(* Return[ res /. (a_->b_):>(a->(b/. looptag->0)*corr[Collect[1/(b/.looptag->0)*(Normal[Series[b,{looptag,0,2}]]),looptag,Expand], (b /. lootag->1)])] *)
 		Return[ res /. (a_->b_):>(a->(b/. looptag->0)*corr[Collect[1/(b/.looptag->0)*(Normal[Series[b,{looptag,0,2}]]),looptag,Expand], (b /. looptag->1 /. xx_String->1)/(b /. looptag->0)])]
 		  ];
+*)
 		];
 
 
 
 (********)
 
-RunParsAlpha[looptag_:1][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, almu_?NumericQ, asmu_?NumericQ, smu_?NumericQ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew,mmW = mw^2, mmZ=mz^2, dyZ, dyW},
+RunParsAlpha[loop_:3][mb_:PDG`MB,mw_:PDG`MW,mz_:PDG`MZ,mh_:PDG`MH,mt_:PDG`MT,gf_:PDG`GF, almu_?NumericQ, asmu_?NumericQ, smu_?NumericQ] := Module[{aew,seq,aa1,aa2, impliciteq,res,solaew,mmW = mw^2, mmZ=mz^2, dyZ, dyW},
 		solaew = {aew->almu};
 Print["DEBUG (given alpha) : 1/aew = ", 1/aew /. solaew];
 
@@ -593,6 +589,10 @@ Print["DEBUG (given alpha) : 1/aew = ", 1/aew /. solaew];
 		    vev -> vev[mb,mw,mz,mh,mt,smu],
 		    scale -> smu};
 		(*		Print[res, ":::",2^(-1/2)*Gf/(4*Pi)^2*mh^2*(1+aEW[mu]*yH[1,0]+aEW[mu]*aQCD[mu]*yH[1,1]+aEW[mu]^2*yH[2,0]) /. mu->smu/. XH[mb,mw,mz,mh,mt,smu,1,2], "::",alam[mb, mw,mz,mh,mt,smu], ":::", XH[mb,mw,mz,mh,mt,smu,2,1]];*)
+	       	res = res /. {aQCD[smu]-> ltg "asmu" asmu/(4 Pi), Gf->gf, aEW[smu]-> ltg "aew" aew/(4 Pi)} /. solaew /. (ltg^x_/; x>loop):>0 /. ltg->1;
+		Print["--->", res];
+		Return[ res /. a_String -> 1];
+(*
 	       	res = res /. {aQCD[smu]-> looptag "asmu" asmu/(4 Pi), Gf->gf, aEW[smu]-> looptag "aew" aew/(4 Pi)} /. solaew;
 		(*Print["--->", res];*)
 		(*Print["1/a=", 1/aew /. solaew];
@@ -602,6 +602,7 @@ Print["DEBUG (given alpha) : 1/aew = ", 1/aew /. solaew];
 		(* Return[ res /. (a_->b_):>(a->(b/. looptag->0)*corr[Collect[1/(b/.looptag->0)*(Normal[Series[b,{looptag,0,2}]]),looptag,Expand], (b /. lootag->1)])] *)
 		Return[ res /. (a_->b_):>(a->(b/. looptag->0)*corr[Collect[1/(b/.looptag->0)*(Normal[Series[b,{looptag,0,2}]]),looptag,Expand], (b /. lootag->1 /. a_String->1)/(b /. looptag->0)])]
 		  ];
+*)
 		];
 
 
