@@ -6,9 +6,9 @@
 
 :Evaluate:  RunQCDnf6::usage  = "RunQCDnf6[oscale,asMZ, MZscale, L, Mtpole, mtth] evaluate alphas at specified oscale in n=6 QCD given asMZ at MZscale (nf=5) with L-loop RGE with top (with Mtpole) threshold evaluated at mtth, if last argument is not specified it is assumed that mtth = Mtpole"
 :Evaluate:  RunQCD::usage  = "RunQCD[oscale,as0,inscale,L,nf] run as from the inscale to oscale in nf flavour QCD at L-loops given as(inscale) = as0"
-:Evaluate:  RunSM::usage  = "RunSM[gp,g,gs,yt,lam,m,iscale,oscale] return running parameters at specified oscale given the values at specified iscale;
+:Evaluate:  RunSM::usage  = "RunSM[gp,g,gs,yb,yt,lam,m,iscale,oscale] return running parameters at specified oscale given the values at specified iscale;
 			     RunSM[pars_,oscale] returns a list {g1 -> ..., g2 -> ..., ..., scale -> oscale} of running parameters given a list pars";
-:Evaluate:  RunSMcouplings::usage  = "RunSMcouplings[gp,g,gs,yt,lam,iscale,oscale,L] return running dimensionless couplings at specified oscale given the values at specified iscale;
+:Evaluate:  RunSMcouplings::usage  = "RunSMcouplings[gp,g,gs,yb,yt,lam,iscale,oscale,L] return running dimensionless couplings at specified oscale given the values at specified iscale;
 			     RunSMcouplings[pars_,oscale,L] returns a list {g1 -> ..., g2 -> ..., ..., scale -> oscale} of running parameters given as a  list pars, L-loop RGES are used";
 
 
